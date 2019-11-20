@@ -13,6 +13,7 @@ services:
     php:
         build: ./dockercnf/php7.3-fpm/
         image: "upick-php:7.3-fpm"
+        privileged: true
         volumes:
             - ./:/var/www/html/ 
         depends_on:
@@ -22,6 +23,7 @@ services:
         command:
             - --character-set-server=utf8mb4
             - --collation-server=utf8mb4_unicode_ci     
+        privileged: true
         volumes:
             - ./dockercnf/mysql5.7/db_data:/var/lib/mysql
         restart: always
