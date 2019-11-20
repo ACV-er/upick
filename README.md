@@ -3,7 +3,10 @@
 ## 部署
 * 使用docker-composer管理容器
 * 构建条件：  
-  *   安装composer、php && php > php7.2
+  *   composer
+  *   php > php7.2
+  *   docker
+  *   docker-compose
 * 构建
   ```
   sudo chmod a+x install.sh && ./install.sh

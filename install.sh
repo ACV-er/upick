@@ -1,5 +1,6 @@
 #!/bin/bash
 
+composer config repo.packagist composer https://packagist.phpcomposer.com
 composer install
 php artisan key:generate
 #项目需要的用户组
@@ -13,7 +14,7 @@ then
 fi
 
 # 赋予用户组内用户写权限
-sudo chown acver:www-data -R ./
+sudo chown $USER:www-data -R ./
 sudo chmod g+w -R ./
 
 # 运行docker-compose构建项目,并打开
