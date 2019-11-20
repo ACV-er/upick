@@ -18,4 +18,4 @@ sudo chown $USER:www-data -R ./
 sudo chmod g+w -R ./
 
 # 运行docker-compose构建项目,并打开
-docker-compose up -d
+docker-compose up --build -d
