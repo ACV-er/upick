@@ -1,6 +1,5 @@
 #!/bin/bash
 
-composer config repo.packagist composer https://packagist.phpcomposer.com
 composer install
 php artisan key:generate
 #项目需要的用户组
