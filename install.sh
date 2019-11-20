@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cp .env.example .env
 composer install
 php artisan key:generate
 #项目需要的用户组
