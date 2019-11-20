@@ -31,6 +31,6 @@ services:
             - ./dockercnf/mysql5.7/db_data:/var/lib/mysql
         restart: always
         environment:
-            MYSQL_ROOT_PASSWORD: www.sky31.com
+            MYSQL_ROOT_PASSWORD: yourpassword
             MYSQL_DATABASE: upick
 
