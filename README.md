@@ -3,7 +3,6 @@
 ## 部署
 * 使用docker-composer管理容器
 * 构建条件：  
-  *   composer
   *   docker
   *   docker-compose
 * 构建
