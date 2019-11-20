@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cp .env.example .env
-docker run --rm -it -v $PWD:/app composer install
+docker run --rm -it -v $PWD:/app composer:1.9.1 install
 
 # 运行docker-compose构建项目,并打开
 docker-compose up --build -d
