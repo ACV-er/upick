@@ -1,10 +1,7 @@
 #!/bin/bash
 
-./tools/composer install
-if [ $? -ne 0 ]; then
-    echo "composer install失败"
-    exit
-
+composer install
+php artisan key:generate
 #项目需要的用户组
 group=www-data
 
