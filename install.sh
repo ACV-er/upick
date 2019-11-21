@@ -8,5 +8,5 @@ docker-compose up --build -d
 
 docker exec -it upick_php chown :www-data -R ./
 docker exec -it upick_php chmod g+w -R ./
-docker exec -it upick_php echo 'yes' | php artisan key:generate
-docker exec -it upick_php echo 'yes' | php artisan migrate
+docker exec -it upick_php php artisan key:generate
+docker exec -it upick_php php artisan migrate
