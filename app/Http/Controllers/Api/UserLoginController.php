@@ -70,8 +70,7 @@ class UserLoginController extends Controller
         }
         $data = $request->only(array_keys($mod));
 
-        $validator = Validator::make($data, $mod);
-        if ($validator->fails()) {
+        if (Validator::make($data, $mod)->fails()) {
             return msg(3, '数据格式错误' . __LINE__);
         };
         $user = User::query()->where('stu_id', $data['stu_id'])->first();

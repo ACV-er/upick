@@ -17,3 +17,30 @@
 
 ## [接口文档](https://git.sky31.com/dinghaodong/UpickBackend/blob/master/api.md)
 > 暂时没有
+
+## 默认遵守的规定
+* 统一使用`msg`函数作为接口返回，如调用失败则返回行号或错误信息加行号
+* api形式路由写到route/api.php中
+* 引入的文件写在composer.json `autoload["files"]`
+* 引入的类写在composer.jsn `autoload["psr-4"]`
+* 自己封装的工具函数放到 `app/Helper/tools` 文件
+* 所有前端参数均以如下方式检验 （关键 判断是否存在，使用Validator检验格式，其余可适当调整
+```php
+// 本例前端参数为 stu_id 与 password
+$mod = array(
+    'stu_id' => ['regex:/^20[\d]{8,10}$/'],
+    'password' => ['regex:/^[^\s]{8,20}$/'],
+);
+if (!$request->has(array_keys($mod))) {
+    return msg(1, __LINE__);
+}
+$data = $request->only(array_keys($mod));
+
+if (Validator::make($data, $mod)->fails()) {
+    return msg(3, '数据格式错误' . __LINE__);
+};
+```
+
+## 对laravel默认配置的一些改动
+* 通过composer.json autoload["files"] 全局引入app/Helper/tools.php
+* session 名固定为 `laravel_session` 在 `config/session.php`
