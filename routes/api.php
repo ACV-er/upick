@@ -19,5 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::namespace('Api')->group(function () {
     Route::post('/login', "UserLoginController@login");
+
     Route::post('/evaluation', "EvaluationController@publish");
+    Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
 });
