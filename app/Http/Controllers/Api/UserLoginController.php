@@ -37,10 +37,9 @@ class UserLoginController extends Controller {
         if (!$user) { // 该用户未在数据库中 用户名错误 或 用户从未登录
             //利用三翼api确定用户账号密码是否正确
             $output = checkUser($data['stu_id'], $data['password']);
-
             if ($output['code'] == 0) {
                 $user = new User([
-                    'nickname'   => $output['name'], //默认信息
+                    'nickname'   => $output['data']['name'], //默认信息
                     'stu_id'     => $data['stu_id'],
                     'password'   => md5($data['password']),
                     'upload'     => '[]', //mysql 中 json 默认值只能设置为NULL 为了避免不必要的麻烦，在创建的时候赋予初始值
