@@ -10,6 +10,7 @@ use App\Models\Evaluation;
 class EvaluationController extends Controller
 {
     //
+
     /**
      * @api {post} /api/evaluation 发布评测
      * @apiGroup 评测
@@ -99,7 +100,63 @@ class EvaluationController extends Controller
         return msg(4, __LINE__);
     }
 
-    /** 评测检查，成功返回data数组
+
+    /**
+     * @api {get} /api/evaluation/:id 获取评测详细信息
+     * @apiGroup 评测
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 获取单篇评测详细信息，返回参数与发布更新同名请求参数意义一致，不同名参数已写出
+     *
+     * @apiParam {String} title      评测id
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     * @apiSuccess {Number} like            赞数
+     * @apiSuccess {Number} unlike          踩数
+     * @apiSuccess {Number} views           浏览量
+     * @apiSuccess {Number} collections     收藏量
+     * @apiSuccess {String} publisher       发布人标识
+     * @apiSuccess {String} publisher_name  发布人姓名
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *     "code":0,
+     *     "status":"成功",
+     *     "data":{
+     *         "id":1,
+     *         "publisher":1,
+     *         "publisher_name":"丁浩东",
+     *         "tag":"["不辣", "汤好喝"]",
+     *         "views":0,
+     *         "collections":0,
+     *         "like":0,
+     *         "unlike":0,
+     *         "img":"[]",
+     *         "title":"文章标题测试",
+     *         "content":"这是文章内容(更新)",
+     *         "location":"联建",
+     *         "shop_name":"黃焖鸡米饭"
+     *     }
+     * }
+     *
+     *
+     */
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function get(Request $request) {
+        $evaluation = Evaluation::query()->find($request->route('id'));
+        if(!$evaluation) {
+            return msg(3, "目标不存在" . __LINE__);
+        }
+
+        return msg(0, $evaluation->info());
+    }
+
+     /** 评测检查，成功返回data数组
      * @param Request|null $request
      * @return array|string
      */
