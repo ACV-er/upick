@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ Route::namespace('Api')->group(function () {
     Route::get('/evaluation/{id}', "EvaluationController@get")->where(["id" => "[0-9]+"]);
     Route::post('/evaluation', "EvaluationController@publish");
     Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
+    Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
 });

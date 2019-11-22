@@ -140,8 +140,6 @@ class EvaluationController extends Controller
      *         "shop_name":"黃焖鸡米饭"
      *     }
      * }
-     *
-     *
      */
     /**
      * @param Request $request
@@ -154,6 +152,31 @@ class EvaluationController extends Controller
         }
 
         return msg(0, $evaluation->info());
+    }
+
+    /**
+     * @api {delete} /api/evaluation/:id 用户删除评测
+     * @apiGroup 评测
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 用户删除评测
+     *
+     * @apiParam {String} title      评测id
+     *
+     * @apiSuccess {Number} code     状态码，0：请求成功
+     * @apiSuccess {String} message  提示信息
+     * @apiSuccess {Object} data     后端参考信息，前端无关
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {"code":0,"status":"成功","data":197}
+     */
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function delete(Request $request) {
+        Evaluation::destroy($request->route('id'));
+        return msg(0, __LINE__);
     }
 
      /** 评测检查，成功返回data数组
