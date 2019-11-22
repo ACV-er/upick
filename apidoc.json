@@ -1,0 +1,12 @@
+{
+    "name": "湘大评测项目接口文档",
+    "version": "1.0.0",
+    "description": "湘大评测项目接口文档，所有接口除登录接口外，均在header中带上 laravel_session:{laravel_session}",
+    "title": "UPick API",
+    "url": "https://upick.acver.xyz",
+    "forceLanguage": "zh-CN",
+    "header": {
+        "title": "全局code解释",
+        "filename": "code.md"
+    }
+}
