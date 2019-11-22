@@ -1,7 +1,7 @@
 {
     "name": "湘大评测项目接口文档",
     "version": "1.0.0",
-    "description": "所有接口除登录接口外，均在header中带上 laravel_session:{laravel_session}\npost、put、delete均使用post其中put、delete追加post参数： _method={put/post}",
+    "description": "均在header中带上 laravel_session:{laravel_session}\npost、put、delete均使用post其中put、delete追加post参数： _method={put/post}",
     "title": "UPick API",
     "url": "https://upick.acver.xyz",
     "forceLanguage": "zh-CN",
