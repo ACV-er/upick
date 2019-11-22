@@ -14,9 +14,9 @@ if [ ! -f ".env" ]; then
   sleep 5
   cp .env.example .env
   docker exec -it upick_php php artisan key:generate
-  docker exec -it upick_php php artisan migrate
 fi
 
+docker exec -it upick_php php artisan migrate
 docker exec -it upick_php chown :www-data -R ./
 docker exec -it upick_php chmod g+w -R ./
 
