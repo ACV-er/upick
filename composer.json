@@ -12,7 +12,9 @@
         "fideloper/proxy": "^4.0",
         "hirak/prestissimo": "^0.3.9",
         "laravel/framework": "^6.2",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
@@ -38,6 +40,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files": [
+            "app/Helper/tools.php"
         ]
     },
     "autoload-dev": {

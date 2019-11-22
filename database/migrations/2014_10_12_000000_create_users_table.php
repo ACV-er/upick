@@ -17,9 +17,10 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('nickname');
             $table->string('stu_id', 20)->unique();
-            $table->json('collection')->default([]);
-            $table->json('upload')->default([]);
-            $table->rememberToken();
+            $table->string('password', 40)->comment("密码md5");
+            $table->json('collection');
+            $table->json('upload');
+            $table->string("remember")->unique();
             $table->timestamps();
         });
     }
