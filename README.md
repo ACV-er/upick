@@ -13,7 +13,7 @@
 * web访问端口映射在10303，部署前确保该端口未被占用
 * mysql存在默认密码，做相应修改**\[必须修改\]**
 * laravel.env需要单独配置
-* phpMyAdmin 地址为 `/mathjucry` (数据库)
+* phpMyAdmin 地址为 `/mathjucool` (数据库)
 
 ## [接口文档](https://git.sky31.com/dinghaodong/UpickBackend/blob/master/api.md)
 > 暂时没有
