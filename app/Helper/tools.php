@@ -35,6 +35,7 @@ function msg($code, $msg) {
         4 => '未知错误',
         5 => '其他错误',
         6 => '未登录',
+        7 => '重复访问'
     );
 
     $result = array(

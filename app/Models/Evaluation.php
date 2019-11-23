@@ -12,6 +12,13 @@ class Evaluation extends Model
         "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name"
     ];
 
+    public function like($action) {
+
+        if($action) {
+            $this->like = $this->like + 1;
+        }
+    }
+
     public function info() {
         $publisher_name = User::query()->find($this->publisher)->nickname;
         return [

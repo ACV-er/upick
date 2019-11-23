@@ -161,7 +161,7 @@ class EvaluationController extends Controller
      *
      * @apiDescription 用户删除评测
      *
-     * @apiParam {String} title      评测id
+     * @apiParam {Number}   id      评测id
      *
      * @apiSuccess {Number} code     状态码，0：请求成功
      * @apiSuccess {String} message  提示信息

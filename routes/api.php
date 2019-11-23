@@ -22,7 +22,14 @@ Route::namespace('Api')->group(function () {
     Route::post('/login', "UserLoginController@login");
 
     Route::get('/evaluation/{id}', "EvaluationController@get")->where(["id" => "[0-9]+"]);
-    Route::post('/evaluation', "EvaluationController@publish");
-    Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
-    Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
+
+    // 登陆验证区
+    Route::group(['middleware' => 'user.login.check'], function () {
+        Route::post('/evaluation', "EvaluationController@publish");
+        Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
+        Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
+
+        Route::post('/like/{id}', "LikeController@mark");
+    });
+
 });
