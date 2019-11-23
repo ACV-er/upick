@@ -48,8 +48,13 @@ class LikeController extends Controller
         DB::beginTransaction();
         try {
             $like = DB::table("likes")->where("user", session("uid"))->where("evaluation", $request->route("id"));
-            // 赞/踩
+
             $evaluation = DB::table('evaluations')->where('id', $data["evaluation"]);
+            if($evaluation->count() == 0) {
+                return msg(3, "目标不存在" . __LINE__);
+            }
+
+            // 赞/踩
             if($data["like"] == 1) {
                 if($like->count()) {
                     if($like->get("like")[0]->like == 1) { //曾经赞过则为取消赞
