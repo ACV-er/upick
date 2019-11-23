@@ -29,8 +29,10 @@ Route::namespace('Api')->group(function () {
         Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
         Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
 
-        Route::post('/like/{id}', "LikeController@mark");
+        Route::post('/like/{id}', "LikeController@mark")->where(["id" => "[0-9]+"]);
         Route::post('/image', "ImageController@upload");
+
+        Route::post('/keep/{id}', "CollectionController@keep")->where(["id" => "[0-9]+"]);
     });
 
 });

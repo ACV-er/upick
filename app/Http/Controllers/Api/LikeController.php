@@ -25,7 +25,7 @@ class LikeController extends Controller
      * @apiSuccess {Object} data     后端参考信息，前端无关
      *
      * @apiSuccessExample {json} Success-Response:
-     * {"code":7,"status":"重复访问","data":71}
+     * {"code":0,"status":"成功","data":43}
      */
     /**
      * @param Request $request

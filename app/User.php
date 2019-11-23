@@ -64,4 +64,38 @@ class User extends Authenticatable
         $this->publish = json_encode($publish_list);
         $this->save();
     }
+
+    /**
+     * @param $evaluation_id
+     * @return bool true代表动作成功，否则表名已收藏
+     */
+    public function add_collection($evaluation_id) {
+        $collection_list = json_decode($this->collection, true);
+        if(!key_exists($evaluation_id, $collection_list)) {
+            $collection_list[$evaluation_id] = 1;
+        } else {
+            return false;
+        }
+        $this->collection = json_encode($collection_list);
+        $this->save();
+
+        return true;
+    }
+
+    /**
+     * @param $evaluation_id
+     * @return bool true代表动作成功，否则表名已取消收藏或者未收藏
+     */
+    public function del_collection($evaluation_id) {
+        $collection_list = json_decode($this->collection, true);
+        if(key_exists($evaluation_id, $collection_list)) {
+            unset($collection_list[$evaluation_id]);
+        } else {
+            return false;
+        }
+        $this->collection = json_encode($collection_list);
+        $this->save();
+
+        return true;
+    }
 }
