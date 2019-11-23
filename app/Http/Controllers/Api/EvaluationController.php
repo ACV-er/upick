@@ -117,12 +117,15 @@ class EvaluationController extends Controller
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
      * @apiSuccess {Object} data            返回参数
-     * @apiSuccess {Number} like            赞数
-     * @apiSuccess {Number} unlike          踩数
-     * @apiSuccess {Number} views           浏览量
-     * @apiSuccess {Number} collections     收藏量
+     *
      * @apiSuccess {String} publisher       发布人标识
      * @apiSuccess {String} publisher_name  发布人姓名
+     * @apiSuccess {Number} views           浏览量
+     * @apiSuccess {Number} like            赞数
+     * @apiSuccess {Number} unlike          踩数
+     * @apiSuccess {Number} collections     收藏量
+     * @apiSuccess {Number} is_like         是否赞踩 -1无 0踩 1赞
+     * @apiSuccess {Number} is_collection   是否收藏 0否 1是
      *
      * @apiSuccessExample {json} Success-Response:
      * {
@@ -141,7 +144,9 @@ class EvaluationController extends Controller
      *         "title":"文章标题测试",
      *         "content":"这是文章内容(更新)",
      *         "location":"联建",
-     *         "shop_name":"黃焖鸡米饭"
+     *         "shop_name":"黃焖鸡米饭",
+     *         "is_like":-1,
+     *         "is_collection":0
      *     }
      * }
      */
