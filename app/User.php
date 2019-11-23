@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'nickname', 'stu_id', 'password', 'collection', 'upload', "remember"
+        'nickname', 'stu_id', 'password', 'collection', 'publish', "remember"
     ];
 
     /**
@@ -42,8 +42,26 @@ class User extends Authenticatable
             'nickname'=> $this->nickname,
             'stu_id'=> $this->stu_id,
             'collection' => $this->collection,
-            'upload' => $this->upload,
+            'publish' => $this->publish,
             'remember' => $this->remember
         ];
+    }
+
+    public function add_publish($evaluation_id) {
+        $publish_list = json_decode($this->publish, true);
+        if(!key_exists($evaluation_id, $publish_list)) {
+            $publish_list[$evaluation_id] = 1;
+        }
+        $this->publish = json_encode($publish_list);
+        $this->save();
+    }
+
+    public function del_publish($evaluation_id) {
+        $publish_list = json_decode($this->publish, true);
+        if(key_exists($evaluation_id, $publish_list)) {
+            unset($publish_list[$evaluation_id]);
+        }
+        $this->publish = json_encode($publish_list);
+        $this->save();
     }
 }

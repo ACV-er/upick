@@ -22,14 +22,14 @@ class UserLoginController extends Controller
      * @apiParam {String} [stu_id]    学号
      * @apiParam {String} [password]  教务密码
      *
-     * @apiSuccess {Number} code    状态码，0：请求成功
+     * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
-     * @apiSuccess {Number} id    用户标识
-     * @apiSuccess {String} nickname    用户名字，真名
+     * @apiSuccess {Number} id        用户标识
+     * @apiSuccess {String} nickname  用户名字，真名
      * @apiSuccess {String} stu_id    用户学号
-     * @apiSuccess {Json} collection    用户收藏（评测标识
-     * @apiSuccess {Json} upload    用户发布（评测标识
-     * @apiSuccess {Json} upload    用户口令（用于登陆
+     * @apiSuccess {Json} collection  用户收藏（评测标识
+     * @apiSuccess {Json} publish      用户发布（评测标识
+     * @apiSuccess {Json} remember    用户口令（用于登陆
      *
      * @apiSuccessExample {json} Success-Response:
      * {
@@ -40,7 +40,7 @@ class UserLoginController extends Controller
      *       "nickname":"丁浩东",
      *       "stu_id":"201705550820",
      *       "collection":"[]",
-     *       "upload":"[]",
+     *       "publish":"[]",
      *       "remember":"3d2b790fcc4beaff6b7097d21f033f02"
      *  }
      * }
@@ -83,7 +83,7 @@ class UserLoginController extends Controller
                     'nickname' => $output['data']['name'], //默认信息
                     'stu_id' => $data['stu_id'],
                     'password' => md5($data['password']),
-                    'upload' => '[]', //mysql 中 json 默认值只能设置为NULL 为了避免不必要的麻烦，在创建的时候赋予初始值
+                    'publish' => '[]', //mysql 中 json 默认值只能设置为NULL 为了避免不必要的麻烦，在创建的时候赋予初始值
                     'collection' => '[]',
                     'remember' => md5($data['password'] . time() . rand(1000, 2000))
                 ]);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Evaluation;
@@ -46,8 +47,11 @@ class EvaluationController extends Controller
 
         $data = $data + ["collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
-        $evaluation = $evaluation->save();
-        if($evaluation) {
+
+        if($evaluation->save()) {
+            // 将该评测加入我的发布
+            User::query()->find(session("uid"))->add_publish($evaluation->id);
+
             return msg(0, __LINE__);
         }
 
@@ -173,9 +177,18 @@ class EvaluationController extends Controller
     /**
      * @param Request $request
      * @return string
+     * @throws \Exception
      */
     public function delete(Request $request) {
-        Evaluation::destroy($request->route('id'));
+        $evaluation = Evaluation::query()->find($request->route('id'));
+        if(!$evaluation) {
+            return msg(3, "目标不存在" . __LINE__);
+        }
+
+        // 将该评测从我的发布中删除
+        User::query()->find(session("uid"))->del_publish($evaluation->id);
+        $evaluation->delete();
+
         return msg(0, __LINE__);
     }
 
