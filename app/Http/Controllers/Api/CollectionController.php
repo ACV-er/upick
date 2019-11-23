@@ -93,7 +93,8 @@ class CollectionController extends Controller
      *          "img":"[]",
      *          "title":"文章标题测试",
      *          "location":"联建",
-     *          "shop_name":"黃焖鸡米饭"
+     *          "shop_name":"黃焖鸡米饭",
+     *          "time":"2019-11-23 05:07:23"
      *      },
      *      {
      *          "id":3,
@@ -104,7 +105,8 @@ class CollectionController extends Controller
      *          "img":"[]",
      *          "title":"文章标题测试",
      *          "location":"联建",
-     *          "shop_name":"黃焖鸡米饭"
+     *          "shop_name":"黃焖鸡米饭",
+     *          "time":"2019-11-23 05:07:23"
      *      }
      *  ]
      * }
@@ -125,7 +127,8 @@ class CollectionController extends Controller
 
         $collection_list = DB::table("evaluations")->whereIn("evaluations.id", $collection_id_list)
             ->leftJoin("users", "evaluations.publisher", "=", "users.id")->get([
-                "evaluations.id as id", "nickname as publisher_name", "tag", "views", "collections", "img", "title", "location", "shop_name"
+                "evaluations.id as id", "nickname as publisher_name", "tag", "views", "collections",
+                "img", "title", "location", "shop_name", "evaluations.created_at as time"
             ])->toArray();
 
         return msg(0, $collection_list);
