@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Validator;
 class LikeController extends Controller
 {
     /**
-     * @api {post} /api/like/:id 用户赞踩评测，可取消，变换赞踩
+     * @api {post} /api/like/:id 用户赞踩评测
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 用户赞踩评测
+     * @apiDescription 用户赞踩评测，可取消，变换赞踩
      *
-     * @apiParam {Number}  id      评测id
-     * @apiParam {Number}  like    是否赞 0踩 1赞
+     * @apiParam {Number}  id        评测id
+     * @apiParam {Number}  like      是否赞 0踩 1赞
      *
      * @apiSuccess {Number} code     状态码，0：请求成功
      * @apiSuccess {String} message  提示信息

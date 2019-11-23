@@ -26,9 +26,9 @@ class EvaluationController extends Controller
      * @apiParam {Json}   tag        类似["不辣","汤好喝"]
      * @apiParam {Json}   img        图片数组，内为图片url（上传图片时返回）
      *
-     * @apiSuccess {Number} code    状态码，0：请求成功
+     * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
-     * @apiSuccess {Object} data    后端参考信息，前端无关
+     * @apiSuccess {Object} data      后端参考信息，前端无关
      *
      * @apiSuccessExample {json} Success-Response:
      * {"code":0,"status":"成功","data":35}
@@ -73,9 +73,9 @@ class EvaluationController extends Controller
      * @apiParam {Json}   tag        类似["不辣","汤好喝"]
      * @apiParam {Json}   img        图片数组，内为图片url（上传图片时返回）
      *
-     * @apiSuccess {Number} code    状态码，0：请求成功
+     * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
-     * @apiSuccess {Object} data    后端参考信息，前端无关
+     * @apiSuccess {Object} data      后端参考信息，前端无关
      *
      * @apiSuccessExample {json} Success-Response:
      * {"code":0,"status":"成功","data":35}
@@ -165,7 +165,7 @@ class EvaluationController extends Controller
      *
      * @apiDescription 用户删除评测
      *
-     * @apiParam {Number}   id      评测id
+     * @apiParam {Number}   id   评测id
      *
      * @apiSuccess {Number} code     状态码，0：请求成功
      * @apiSuccess {String} message  提示信息
