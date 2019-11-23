@@ -9,7 +9,7 @@
 * 构建
   ```
   ./install.sh
-  ```
+ ```
 * web访问端口映射在10303，部署前确保该端口未被占用
 * mysql存在默认密码，做相应修改**\[必须修改\]**
 * laravel.env需要单独配置
@@ -25,6 +25,7 @@
 * 引入的类写在composer.jsn `autoload["psr-4"]`
 * 自己封装的工具函数放到 `app/Helper/tools` 文件
 * 所有前端参数均以如下方式检验 （关键 判断是否存在，使用Validator检验格式，其余可适当调整
+
 ```php
 // 本例前端参数为 stu_id 与 password
 $mod = array(
