@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class UserLoginController extends Controller
@@ -120,4 +121,69 @@ class UserLoginController extends Controller
         return msg(2, __LINE__);
     }
 
+    /**
+     * @api {get} /api/user/:uid/publish     获取用户发布列表
+     * @apiGroup 用户
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription      获取用户发布列表,需登陆。参数解释见评测详细信息同名返回参数
+     *
+     * @apiParam {Number}  uid       目标用户id
+     *
+     * @apiSuccess {Number} code     状态码，0：请求成功
+     * @apiSuccess {String} message  提示信息
+     * @apiSuccess {Object} data     返回信息
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *  "code":0,
+     *  "status":"成功",
+     *  "data":[
+     *      {
+     *          "id":2,
+     *          "publisher_name":"丁浩东",
+     *          "tag":"["不辣", "汤好喝"]",
+     *          "views":0,
+     *          "collections":1,
+     *          "img":"[]",
+     *          "title":"文章标题测试",
+     *          "location":"联建",
+     *          "shop_name":"黃焖鸡米饭",
+     *          "time":"2019-11-23 05:07:23"
+     *      },
+     *      {
+     *          "id":3,
+     *          "publisher_name":"丁浩东",
+     *          "tag":"["不辣", "汤好喝"]",
+     *          "views":0,
+     *          "collections":1,
+     *          "img":"[]",
+     *          "title":"文章标题测试",
+     *          "location":"联建",
+     *          "shop_name":"黃焖鸡米饭",
+     *          "time":"2019-11-23 05:07:23"
+     *      }
+     *  ]
+     * }
+     */
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function get_user_publish_list(Request $request) {
+        $user_id = $request->route("uid");
+        $user = User::query()->find($user_id);
+        if (!$user) {
+            return msg(3, "目标不存在" . __LINE__);
+        }
+        $publish_id_list = array_keys(json_decode($user->publish, true));
+
+        $publish_list = DB::table("evaluations")->whereIn("evaluations.id", $publish_id_list)
+            ->leftJoin("users", "evaluations.publisher", "=", "users.id")->get([
+                "evaluations.id as id", "nickname as publisher_name", "tag", "views", "collections",
+                "img", "title", "location", "shop_name", "evaluations.created_at as time"
+            ])->toArray();
+
+        return msg(0, $publish_list);
+    }
 }

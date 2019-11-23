@@ -38,6 +38,8 @@ Route::namespace('Api')->group(function () {
         });
 
         Route::get('/user/{uid}/keep', "CollectionController@get_user_collection_list")->where(["uid" => "[0-9]+"]);
+
+        Route::get('/user/{uid}/publish', "UserLoginController@get_user_publish_list")->where(["uid" => "[0-9]+"]);
     });
 
 });
