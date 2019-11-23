@@ -26,13 +26,18 @@ Route::namespace('Api')->group(function () {
     // 登陆验证区
     Route::group(['middleware' => 'user.login.check'], function () {
         Route::post('/evaluation', "EvaluationController@publish");
-        Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
-        Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
 
-        Route::post('/like/{id}', "LikeController@mark")->where(["id" => "[0-9]+"]);
-        Route::post('/image', "ImageController@upload");
+        Route::group(["middleware" => 'evaluation.exist.check'], function () {
+            Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
+            Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
 
-        Route::post('/keep/{id}', "CollectionController@keep")->where(["id" => "[0-9]+"]);
+            Route::post('/like/{id}', "LikeController@mark")->where(["id" => "[0-9]+"]);
+            Route::post('/image', "ImageController@upload");
+
+            Route::post('/keep/{id}', "CollectionController@keep")->where(["id" => "[0-9]+"]);
+        });
+
+        Route::get('/user/{uid}/keep', "CollectionController@get_user_collection_list")->where(["uid" => "[0-9]+"]);
     });
 
 });

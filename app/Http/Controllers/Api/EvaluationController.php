@@ -92,9 +92,6 @@ class EvaluationController extends Controller
             return $data;
         }
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if(!$evaluation) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
 
         $evaluation = $evaluation->update($data);
         if($evaluation) {
@@ -158,9 +155,6 @@ class EvaluationController extends Controller
      */
     public function get(Request $request) {
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if(!$evaluation) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
 
         return msg(0, $evaluation->info());
     }
@@ -188,9 +182,6 @@ class EvaluationController extends Controller
      */
     public function delete(Request $request) {
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if(!$evaluation) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
 
         // 将该评测从我的发布中删除
         User::query()->find(session("uid"))->del_publish($evaluation->id);

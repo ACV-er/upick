@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Like;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -48,11 +47,7 @@ class LikeController extends Controller
         DB::beginTransaction();
         try {
             $like = DB::table("likes")->where("user", session("uid"))->where("evaluation", $request->route("id"));
-
             $evaluation = DB::table('evaluations')->where('id', $data["evaluation"]);
-            if($evaluation->count() == 0) {
-                return msg(3, "目标不存在" . __LINE__);
-            }
 
             // 赞/踩
             if($data["like"] == 1) {

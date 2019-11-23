@@ -13,7 +13,6 @@ class Evaluation extends Model
     ];
 
     public function like($action) {
-
         if($action) {
             $this->like = $this->like + 1;
         }
