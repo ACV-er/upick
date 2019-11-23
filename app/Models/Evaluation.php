@@ -46,7 +46,8 @@ class Evaluation extends Model
             "location"       => $this->location,
             "shop_name"      => $this->shop_name,
             "is_like"        => $is_like,
-            "is_collection"  => $is_collection
+            "is_collection"  => $is_collection,
+            "time"           => date_format($this->created_at, "Y-m-d h:i:s")
         ];
     }
 }

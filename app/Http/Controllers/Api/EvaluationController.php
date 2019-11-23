@@ -126,6 +126,7 @@ class EvaluationController extends Controller
      * @apiSuccess {Number} collections     收藏量
      * @apiSuccess {Number} is_like         是否赞踩 -1无 0踩 1赞
      * @apiSuccess {Number} is_collection   是否收藏 0否 1是
+     * @apiSuccess {String} time            首次发布时间
      *
      * @apiSuccessExample {json} Success-Response:
      * {
@@ -146,7 +147,8 @@ class EvaluationController extends Controller
      *         "location":"联建",
      *         "shop_name":"黃焖鸡米饭",
      *         "is_like":-1,
-     *         "is_collection":0
+     *         "is_collection":0,
+     *         "time": "2019-11-23 05:25:09"
      *     }
      * }
      */
