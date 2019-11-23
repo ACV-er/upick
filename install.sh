@@ -14,6 +14,7 @@ if [ ! -f ".env" ]; then
   sleep 5
   cp .env.example .env
   docker exec -it upick_php php artisan key:generate
+  docker exec -it upick_php php artisan storage:link
 fi
 
 # 等待mysql执行后手动执行该命令

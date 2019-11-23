@@ -20,7 +20,7 @@ class LoginCkeck
         } else {
             // 未登录返回 未登录
             // 正常情况不会出现未登录
-            return  response(msg(2, __LINE__), 200);
+            return  response(msg(6, __LINE__), 200);
         }
     }
 }
