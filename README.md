@@ -51,3 +51,7 @@ if (Validator::make($data, $mod)->fails()) {
 ## 对laravel默认配置的一些改动
 * 通过composer.json autoload["files"] 全局引入app/Helper/tools.php
 * session 名固定为 `laravel_session` 在 `config/session.php`
+
+## 数据文件
+* mysql 数据文件挂载在 dockercnf/mysql5.7/db_data
+* redis 数据文件挂载在 dockercnf/redis/[redis容器名]_data

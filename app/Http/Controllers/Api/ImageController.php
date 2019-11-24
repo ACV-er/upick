@@ -52,7 +52,7 @@ class ImageController extends Controller
         // 如果redis连接失败 中止保存
         try {
             $redis = new Redis();
-            $redis->connect('redis_db', 6379);
+            $redis->connect('image_redis_db', 6379);
         } catch (Exception $e) {
             return msg(500, "连接redis失败" . __LINE__);
         }

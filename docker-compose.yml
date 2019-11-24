@@ -20,7 +20,8 @@ services:
       - ./:/var/www/html/
     depends_on:
       - db
-      - redis_db
+      - image_redis_db
+      - collection_redis_db
   db:
     image: "mysql:5.7.28"
     container_name: "upick_mysql"
@@ -34,7 +35,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: yourpassword
       MYSQL_DATABASE: upick
-  redis_db:
+  image_redis_db:
     image: "redis:5.0.7"
     container_name: "upick_img_redis"
+    volumes:
+      - ./dockercnf/redis/image_redis_db/:/data
+  collection_redis_db:
+    image: "redis:5.0.7"
+    container_name: "upick_collection_redis"
+    volumes:
+      - ./dockercnf/redis/collection_redis_db/:/data
 
