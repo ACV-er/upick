@@ -1,5 +1,10 @@
 # 湘大点评后端及后台
 
+## 描述
+* 基于php7.3的laravel项目，使用composer作为包管理工具，项目构建时自动完成`composer install`  
+* 使用apidoc生成文档，在项目中使用`npm install`即可直接安装apidoc, `npm run apidoc` 即可生成文档。
+* 使用docker进行项目部署，install.sh为一键部署脚本。
+
 ## 部署
 * 使用docker-composer管理容器
 * 构建条件：  

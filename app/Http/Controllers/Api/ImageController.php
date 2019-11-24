@@ -65,7 +65,7 @@ class ImageController extends Controller
             return msg(500, "图片保存失败" . __LINE__);
         }
         $pic_url = env('APP_URL') . "/storage/image/" . $all_name;
-        $redis->hSet('good_image', $pic_url, time()); // 存储图片上传时间 外部辅助脚本过期后删除
+        $redis->hSet('food_image', $pic_url, time()); // 存储图片上传时间 外部辅助脚本过期后删除
         return msg(0, $pic_url);
     }
 
