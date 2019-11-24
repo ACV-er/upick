@@ -18,7 +18,7 @@ class ExistCheck
     {
         $evaluation = Evaluation::query()->find($request->route('id'));
         if(!$evaluation) {
-            return msg(3, "目标不存在" . __LINE__);
+            return response(msg(3, "目标不存在" . __LINE__));
         } else {
             return $next($request);
         }

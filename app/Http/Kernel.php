@@ -63,7 +63,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'user.login.check' => \App\Http\Middleware\User\LoginCkeck::class,
-        'evaluation.exist.check' => \App\Http\Middleware\Evaluation\ExistCheck::class
+        'evaluation.exist.check' => \App\Http\Middleware\Evaluation\ExistCheck::class,
     ];
 
     /**
