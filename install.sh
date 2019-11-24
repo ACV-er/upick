@@ -7,19 +7,19 @@ docker run --rm -it -v $PWD:/app composer:1.9.1 install
 docker-compose stop
 docker-compose rm
 
-# 删除之前的sql文件,上线部署后不执行该步骤
-sudo rm -rf ./dockercnf/mysql5.7/db_data/*
-
 docker-compose up --build -d
 if [ ! -f ".env" ]; then
   sleep 5
   cp .env.example .env
+  # 删除之前的sql文件,上线部署后不执行该步骤
+  sudo rm -rf ./dockercnf/mysql5.7/db_data/*
+
   docker exec -it upick_php php artisan key:generate
   docker exec -it upick_php php artisan storage:link
 fi
 
 # 等待mysql执行后手动执行该命令
-docker exec -it upick_php php artisan migrate
+docker exec -it upick_php php artisan migrate --force
 docker exec -it upick_php chown :www-data -R ./
 docker exec -it upick_php chmod g+w -R ./
 

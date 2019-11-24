@@ -48,16 +48,19 @@ class CollectionController extends Controller
 
         $user = User::query()->find(session("uid"));
         $evaluation_id = $request->route("id");
+        $evaluation = Evaluation::query()->find($evaluation_id);
 
         if ($request->input("action") == "keep") {
             if ($user->add_collection($evaluation_id)) {
-                Evaluation::query()->find($evaluation_id)->increment("collections");
+                $evaluation->increment("collections");
+                $evaluation->increment("score");
             } else {
                 return msg(3, __LINE__);
             }
         } else {
             if ($user->del_collection($evaluation_id)) {
-                Evaluation::query()->find($evaluation_id)->decrement("collections");
+                $evaluation->decrement("collections");
+                $evaluation->decrement("score");
             } else {
                 return msg(3, __LINE__);
             }

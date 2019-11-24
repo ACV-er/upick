@@ -109,7 +109,7 @@ class EvaluationController extends Controller
      *
      * @apiDescription 获取单篇评测详细信息，返回参数与发布更新同名请求参数意义一致，不同名参数已写出
      *
-     * @apiParam {String} title      评测id
+     * @apiParam {Number} id      评测id
      *
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
@@ -188,6 +188,70 @@ class EvaluationController extends Controller
         $evaluation->delete();
 
         return msg(0, __LINE__);
+    }
+
+
+    /**
+     * @api {get} /api/evaluation/list/:page 获取评测列表
+     * @apiGroup 评测
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 获取评测列表
+     *
+     * @apiParam {Number} page      页码数，从1开始
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     *
+     * @apiSuccess {String} publisher       发布人标识
+     * @apiSuccess {String} publisher_name  发布人姓名
+     * @apiSuccess {Number} views           浏览量
+     * @apiSuccess {Number} like            赞数
+     * @apiSuccess {Number} unlike          踩数
+     * @apiSuccess {Number} collections     收藏量
+     * @apiSuccess {Number} is_like         是否赞踩 -1无 0踩 1赞
+     * @apiSuccess {Number} is_collection   是否收藏 0否 1是
+     * @apiSuccess {String} time            首次发布时间
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *  太长 不展示了
+     * }
+     */
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function get_list(Request $request) {
+        $offset = $request->route("page") * 10 - 10;
+
+        $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("evaluations.created_at")
+                                            ->leftJoin("users", "evaluations.publisher", "=", "users.id")
+                                            ->get(["evaluations.id as id", "nickname as publisher_name", "tag", "views",
+                                                "collections","img", "title", "location", "shop_name", "evaluations.created_at as time"])
+                                            ->toArray();
+        if($request->route("page") == 1) {
+            $evaluation_list = $this->get_orderBy_score_list() + $evaluation_list;
+        }
+
+        return msg(0, $evaluation_list);
+    }
+
+    private function get_orderBy_score_list() {
+        $list = Evaluation::query()->limit(20)->orderByDesc("score")
+                ->leftJoin("users", "evaluations.publisher", "=", "users.id")
+                ->get(["evaluations.id as id", "nickname as publisher_name", "tag", "views",
+                    "collections","img", "title", "location", "shop_name", "evaluations.created_at as time"])
+                ->toArray();
+
+        $new_list = [];
+        $begin = rand(0, 20);
+        for($i = 0; $i < 3; $i+=1) {
+            $new_list = $list[($begin + $i*6) % count($list)];
+        }
+
+        return $new_list;
     }
 
      /** 评测检查，成功返回data数组
