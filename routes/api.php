@@ -42,5 +42,8 @@ Route::namespace('Api')->group(function () {
 
         Route::get('/user/{uid}/publish', "UserLoginController@get_user_publish_list")->where(["uid" => "[0-9]+"]);
     });
+    Route::group(['middleware' => 'manager.login.check'],function (){
 
+    });
+    Route::post('/manager/login', "ManagerController@login");
 });
