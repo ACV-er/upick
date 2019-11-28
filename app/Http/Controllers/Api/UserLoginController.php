@@ -106,7 +106,7 @@ class UserLoginController extends Controller
                 return msg(0, $user->info());
             } else { //匹配失败 用户更改密码或者 用户名、密码错误
                 $output = checkUser($data['stu_id'], $data['password']);
-                print_r($output);
+//                print_r($output);
                 if ($output['code'] == 0) {
                     $user->password = md5($data['password']);
                     $user->remember = md5($data['password'] . time() . rand(1000, 2000));
