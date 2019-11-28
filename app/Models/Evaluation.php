@@ -9,8 +9,8 @@ class Evaluation extends Model
 {
     //
     protected $fillable = [
-        "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name"
-    ];
+    "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name"
+];
 
     public function like($action) {
         if($action) {

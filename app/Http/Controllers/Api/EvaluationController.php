@@ -92,12 +92,10 @@ class EvaluationController extends Controller
             return $data;
         }
         $evaluation = Evaluation::query()->find($request->route('id'));
-
         $evaluation = $evaluation->update($data);
         if($evaluation) {
             return msg(0, __LINE__);
         }
-
         return msg(4, __LINE__);
     }
 

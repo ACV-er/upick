@@ -45,5 +45,8 @@ Route::namespace('Api')->group(function () {
     Route::group(['middleware' => 'manager.login.check'],function (){
 
     });
-    Route::post('/manager/login', "ManagerController@login");
+    Route::post('/manager/update', "ManagerController@update");
+    Route::post('/manager/register', "ManagerController@register");
 });
+
+Route::post('/manager/login', "ManagerController@login");
