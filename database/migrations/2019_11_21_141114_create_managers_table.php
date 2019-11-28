@@ -18,6 +18,7 @@ class CreateManagersTable extends Migration
             $table->string('nickname');
             $table->string('stu_id', 20)->unique();
             $table->string('password', 40)->comment("md5");
+            $table->integer("level")->comment("管理员等级");
             $table->timestamps();
         });
     }
