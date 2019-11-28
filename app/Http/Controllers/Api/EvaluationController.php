@@ -248,7 +248,7 @@ class EvaluationController extends Controller
         $new_list = [];
         $begin = rand(0, 20);
         for($i = 0; $i < 3; $i+=1) {
-            $new_list = $list[($begin + $i*6) % count($list)];
+            $new_list[] = $list[($begin + $i*6) % count($list)];
         }
 
         return $new_list;
