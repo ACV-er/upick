@@ -14,7 +14,7 @@ class ManagerController extends Controller
     /**
      * @param Request $request
      * @return string
-     * @api {post} /api/mannager/login 登陆
+     * @api {post} /api/manager/login 登陆
      * @apiGroup 管理员
      * @apiVersion 1.0.0
      *
@@ -40,10 +40,8 @@ class ManagerController extends Controller
      *  }
      * }
      */
-    public function login(Request $request)
+    public function Login(Request $request)
     {
-        session(['admin_login' => false, 'admin_id' => null]);
-
         $mod = array(
             'stu_id' => ['regex:/^20[\d]{8,10}$/'],
             'password' => ['regex:/^[^\s]{8,20}$/'],
@@ -57,15 +55,65 @@ class ManagerController extends Controller
             return msg(3, '数据格式错误' . __LINE__);
         };
 
-        // 是否成功
-        $login = true;
-        if ($login) {
-            $user = User::query()->where('stu_id', $data['stu_id'])->first();
-            session(['ManagerLogin' => true, 'uid' => $user->id]);
-            return msg(0, "管理员数据");
 
-        } else {
-            return msg(2, "" . __LINE__);
+
+
+
+
+        $Manager = Manager::query()->where('stu_id','=',$data['stu_id'])->first();
+        if(!$Manager){
+            return msg(8, "" . __LINE__);
+        }else{
+            if ($Manager['nick_name'] == 'never_login') { //用户从未登录
+                //利用三翼api确定用户账号密码是否正确
+                $output = checkUser($data['stu_id'], $data['password']);
+                if ($output['code'] == 0) {
+                    $data = [
+                        'nickname'=>$data['nickname'],
+                        'password'=>$data['password'],
+                        'stu_id' => $data['stu_id'],
+                        'level' => '1'
+                    ];
+                    $result = $Manager->update($data);
+
+                    if ($result) {
+                        //直接使用上面的 $user 会导致没有id  这个对象新建的时候没有id save后才有的id 但是该id只是在数据库中 需要再次查找模型,laravel老版本的一个bug，有兴趣可以看看
+//                        $Manager = Manager::query()->where('stu_id', $data['stu_id'])->first();
+                        session(['ManagerLogin' => true, 'mid' => $Manager->id]);
+
+                        return msg(0, $Manager->info());
+                    } else {
+                        return msg(4, __LINE__);
+                    }
+                }else{
+                    return msg(2,__LINE__);
+                }
+            } else { //查询到该用户记录
+                if ($Manager->password === md5($data['password'])) { //匹配数据库中的密码
+                    session(['ManagerLogin' => true, 'mid' => $Manager->id]);
+                    return msg(0, $Manager->info());
+                } else { //匹配失败 用户更改密码或者 用户名、密码错误
+                    //利用三翼api确定用户账号密码是否正确
+                    $output = checkUser($data['stu_id'], $data['password']);
+                    if ($output['code'] == 0) {
+                        $data = [
+                            'nickname'=>$data['nickname'],
+                            'password'=>$data['password'],
+                            'stu_id' => $data['stu_id'],
+                            'level' => '1'
+                        ];
+                        $result = $Manager->update($data);
+                        if ($request){
+                            session(['ManagerLogin' => true, 'mid' => $Manager->id]);
+                            return msg(0, $Manager->info());
+                        }else{
+                            return msg(4,__LINE__);
+                        }
+                    }
+
+                }
+            }
+
         }
     }
     /**
@@ -108,6 +156,10 @@ class ManagerController extends Controller
         if (!is_array($data)) {
             return $data;
         }
+        $data = $data + [
+                "level" => 1,
+                "password"    => md5('never_login')
+            ];
         $Manager = new Manager($data);
         $Manager->save();
     }
@@ -116,14 +168,13 @@ class ManagerController extends Controller
 
     /**
      * @api {post} /api/evaluation/:id 编辑管理员信息
-     * @apiGroup 编辑
+     * @apiGroup 管理员
      * @apiVersion 1.0.0
      *
      * @apiDescription 编辑管理员信息，所有内容皆不为空
      *
      * @apiParam {String} nickname   姓名
-     * @apiParam {String} stu_id     学号
-     * @apiParam {String} password   教务密码
+     * @apiParam {String} password   密码
      *
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
@@ -152,14 +203,18 @@ class ManagerController extends Controller
     {
         //检查数据类型格式是否有误，data_change在最下面
         $data = $this->data_change($request);
+
         if (!is_array($data)) {
             return $data;
         }
+        $Manager = Manager::query()->find($data["id"]);
         //修改参数
-        $Manager = Manager::where('id',$data['id'])->update(['nickname'=>$data['nickname']],['stu_id'=>$data['stu_id']],['password'=>$data['password']]);
-
+        $data = [
+            'nickname'=>$data['nickname'],
+            'password'=>$data['password']
+        ];
+        $Manager->update($data);
         if ($Manager) {
-            $Manager = Manager::query()->find($data['id']);
             if ($Manager){
                 return msg(0, $Manager->info());
             }else{
@@ -176,9 +231,7 @@ class ManagerController extends Controller
     private function data_handle(Request $request=null) {
         $mod = [
             "nickname"     => ["string", "max:15"],
-            "stu_id"   => ["string", "max:12"],
-            "password"  => ["string", "max:20"],
-            "level" => ["string", "max:2"]
+            "stu_id"   => ["string", "max:12"]
         ];
         if (!$request->has(array_keys($mod))) {
             return msg(1, __LINE__);
@@ -196,7 +249,6 @@ class ManagerController extends Controller
         $mod = [
             "id" => ["string",'max:3'],
             "nickname"     => ["string", "max:15"],
-            "stu_id"   => ["string", "max:12"],
             "password"  => ["string", "max:20"]
         ];
         if (!$request->has(array_keys($mod))) {

@@ -92,7 +92,7 @@ class UserLoginController extends Controller
 
                 if ($result) {
                     //直接使用上面的 $user 会导致没有id  这个对象新建的时候没有id save后才有的id 但是该id只是在数据库中 需要再次查找模型
-                    $user = User::query()->where('stu_id', $data['stu_id'])->first();
+//                    $user = User::query()->where('stu_id', $data['stu_id'])->first();
                     session(['login' => true, 'uid' => $user->id]);
 
                     return msg(0, $user->info());
