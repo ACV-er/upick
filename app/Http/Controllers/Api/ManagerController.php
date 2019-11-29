@@ -47,7 +47,7 @@ class ManagerController extends Controller
     {
         session(['ManagerLogin' => false, 'mid' => null, 'level' => null]);
         $mod = array(
-            'stu_id' => ['regex:/^[\w]{8,12}$/'],
+            'stu_id' => ['regex:/^[\w]{5,12}$/'],
             'password' => ['regex:/^[^\s]{8,20}$/'],
         );
         if (!$request->has(array_keys($mod))) {
