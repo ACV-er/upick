@@ -42,11 +42,18 @@ Route::namespace('Api')->group(function () {
 
         Route::get('/user/{uid}/publish', "UserLoginController@get_user_publish_list")->where(["uid" => "[0-9]+"]);
     });
+
+
+    //管理员登录验证区
     Route::group(['middleware' => 'manager.login.check'],function (){
+        Route::post('/manager/update', "ManagerController@update");
 
     });
-    Route::post('/manager/update', "ManagerController@update");
-    Route::post('/manager/register', "ManagerController@register");
+    Route::post('/manager/add', "ManagerController@add");
+    Route::post('/manager/del', "ManagerController@del");
+    Route::get('/food/list/{page}',"FoodLibraryController@get_list")->where(["page" => "[0-9]+"]);
+    Route::post('/manager/login', "ManagerController@login");
+    Route::get('/manager/list', "ManagerController@list");
 });
 
-Route::post('/manager/login', "ManagerController@login");
+//Route::post('/manager/login', "ManagerController@login");

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -35,7 +36,8 @@ function msg($code, $msg) {
         4 => '未知错误',
         5 => '其他错误',
         6 => '未登录',
-        7 => '重复访问'
+        7 => '重复访问',
+        8 => '无管理员信息'
     );
 
     $result = array(
@@ -44,5 +46,15 @@ function msg($code, $msg) {
         'data' => $msg
     );
 
+
     return json_encode($result, JSON_UNESCAPED_UNICODE);
+}
+function list_all(&$data){
+    foreach ($data as &$item){
+        $level = [
+            0 => '超级管理员',
+            1 => '普通管理员'
+        ];
+        $item['level'] = $level['level'];
+    }
 }
