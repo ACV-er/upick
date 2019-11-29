@@ -117,7 +117,6 @@ class UserLoginController extends Controller
                 }
             }
         }
-
         return msg(2, __LINE__);
     }
 

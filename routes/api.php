@@ -27,7 +27,6 @@ Route::namespace('Api')->group(function () {
     // 用户登陆验证区
     Route::group(['middleware' => 'user.login.check'], function () {
         Route::post('/evaluation', "EvaluationController@publish");
-        Route::post('/image', "ImageController@upload");
 
         Route::group(["middleware" => 'evaluation.exist.check'], function () {
             Route::post('/like/{id}', "LikeController@mark")->where(["id" => "[0-9]+"]);
@@ -38,6 +37,9 @@ Route::namespace('Api')->group(function () {
         Route::get('/user/{uid}/keep', "CollectionController@get_user_collection_list")->where(["uid" => "[0-9]+"]);
         Route::get('/user/{uid}/publish', "UserLoginController@get_user_publish_list")->where(["uid" => "[0-9]+"]);
     });
+
+    // 管理员和用户都可以使用
+    Route::post('/image', "ImageController@upload")->middleware("login.check");
 
     // 测评所有者和管理员均可操作
     Route::group(["middleware" => ['owner.check', "evaluation.exist.check"]], function () {
