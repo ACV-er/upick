@@ -37,7 +37,7 @@ class ImageController extends Controller
      */
     public function upload(Request $request) {
         if (!$request->hasFile('image')) {
-            return msg(1, "缺失参数");
+            return msg(1, "缺失参数" . __LINE__);
         }
         $data = $request->only('image');
         $validator = Validator::make($data, [ // 图片文件小于10M

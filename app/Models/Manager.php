@@ -13,12 +13,16 @@ class Manager extends Model
     ];
     public function info()
     {
-        return [
+        $level = [
+            "0" => "超级管理员",
+            "1" => "普通管理员"
+        ];
 
+        return [
+            'id'     => $this->id,
             'nickname' => $this->nickname,
             'stu_id' => $this->stu_id,
-            'password' => $this->password,
-            'level' => $this->level
+            'level' => $level[$this->level]
         ];
     }
 

@@ -63,8 +63,9 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'user.login.check' => \App\Http\Middleware\User\LoginCkeck::class,
-        'manager.login.check' => \App\Http\Middleware\User\LoginManagerCheck::class,
+        'manager.login.check' => \App\Http\Middleware\Manager\LoginCheck::class,
         'evaluation.exist.check' => \App\Http\Middleware\Evaluation\ExistCheck::class,
+        'manager.super.check' => \App\Http\Middleware\Manager\SuperPowerCheck::class
     ];
 
     /**

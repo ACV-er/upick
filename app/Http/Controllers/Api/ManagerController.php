@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Evaluation;
-use App\User;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 use App\Models\Manager;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ManagerController extends Controller
 {
@@ -27,17 +25,17 @@ class ManagerController extends Controller
      * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} nickname  管理员名字，真名
      * @apiSuccess {String} stu_id    管理员学号
-     * @apiSuccess {Json} level        管理员等级
+     * @apiSuccess {String} level     管理员等级
      *
      * @apiSuccessExample {json} Success-Response:
      * {
      *  "code":0,
      *  "status":"成功",
      *  "data":{
-     *       "id":1,
+     *       "id":5,
      *       "nickname":"丁浩东",
      *       "stu_id":"201705550820",
-     *       "level":"1",
+     *       "level":"普通管理员"
      *  }
      * }
      */
@@ -45,8 +43,9 @@ class ManagerController extends Controller
      * @param Request $request
      * @return string
      */
-    public function Login(Request $request)
+    public function login(Request $request)
     {
+        session(['ManagerLogin' => false, 'mid' => null, 'level' => null]);
         $mod = array(
             'stu_id' => ['regex:/^20[\d]{8,10}$/'],
             'password' => ['regex:/^[^\s]{8,20}$/'],
@@ -61,55 +60,51 @@ class ManagerController extends Controller
         };
 
 
-        $Manager = Manager::query()->where('stu_id', '=', $data['stu_id'])->first();
-        if (!$Manager) {
-            return msg(8, "" . __LINE__);
+        $manager = Manager::query()->where('stu_id', '=', $data['stu_id'])->first();
+        if (!$manager) {
+            return msg(2, "管理员帐号密码错误" . __LINE__);
         } else {
-            if ($Manager['password'] == 'never_login') { //用户从未登录
+            if ($manager['password'] == 'never_login') { //用户从未登录
                 //利用三翼api确定用户账号密码是否正确
                 $output = checkUser($data['stu_id'], $data['password']);
                 if ($output['code'] == 0) {
                     $data = [
-                        'nickname' => $data['nickname'],
-                        'password' => $data['password'],
+                        'nickname' => $output['data']['name'],
+                        'password' => md5($data['password']),
                         'stu_id' => $data['stu_id'],
                         'level' => '1'
                     ];
-                    $result = $Manager->update($data);
+                    $result = $manager->update($data);
 
                     if ($result) {
-                        //直接使用上面的 $user 会导致没有id  这个对象新建的时候没有id save后才有的id 但是该id只是在数据库中 需要再次查找模型,laravel老版本的一个bug，有兴趣可以看看
-//                        $Manager = Manager::query()->where('stu_id', $data['stu_id'])->first();
-                        session(['ManagerLogin' => true, 'mid' => $Manager->id]);
-
-                        return msg(0, $Manager->info());
+                        session(['ManagerLogin' => true, 'mid' => $manager->id, 'level' => $manager->level]);
+                        return msg(0, $manager->info());
                     } else {
                         return msg(4, __LINE__);
                     }
                 } else {
                     return msg(2, __LINE__);
                 }
-            } else { //查询到该用户记录
-                if ($Manager->password === md5($data['password'])) { //匹配数据库中的密码
-                    session(['ManagerLogin' => true, 'mid' => $Manager->id]);
-                    return msg(0, $Manager->info());
+            } else { // 曾经登录过
+                if ($manager->password === md5($data['password'])) { //匹配数据库中的密码
+                    session(['ManagerLogin' => true, 'mid' => $manager->id, 'level' => $manager->level]);
+                    return msg(0, $manager->info());
                 } else { //匹配失败 用户更改密码或者 用户名、密码错误
                     //利用三翼api确定用户账号密码是否正确
                     $output = checkUser($data['stu_id'], $data['password']);
                     if ($output['code'] == 0) {
                         $data = [
-//                            'nickname' => $data['nickname'],
-                            'password' => $data['password'],
-                            'stu_id' => $data['stu_id'],
-                            'level' => '1'
+                            'password' => md5($data['password']),
                         ];
-                        $result = $Manager->update($data);
+                        $result = $manager->update($data);
                         if ($result) {
-                            session(['ManagerLogin' => true, 'mid' => $Manager->id]);
-                            return msg(0, $Manager->info());
+                            session(['ManagerLogin' => true, 'mid' => $manager->id, 'level' => $manager->level]);
+                            return msg(0, $manager->info());
                         } else {
                             return msg(4, __LINE__);
                         }
+                    } else {
+                        return msg(2, "帐号密码错误" . __LINE__);
                     }
 
                 }
@@ -118,34 +113,18 @@ class ManagerController extends Controller
         }
     }
     /**
-     * @api {post} /api/manager/register 添加管理员
+     * @api {post} /api/manager/add 添加管理员
      * @apiGroup 管理员
      * @apiVersion 1.0.0
      *
      * @apiDescription 编辑管理员信息，所有内容皆不为空
      *
-     * @apiParam {String} nickname   姓名
-     * @apiParam {String} level      管理员级别
-     * @apiParam {String} stu_id     学号
-     * @apiParam {String} password   教务密码
+     * @apiParam {String} stu_id     需要添加的管理员的学号
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
-     * @apiSuccess {String} nickname  管理员名字，真名
-     * @apiSuccess {String} stu_id    管理员学号
-     * @apiSuccess {Json} level        管理员等级
      *
      * @apiSuccessExample {json} Success-Response:
-     * {
-     *  "code": 0,
-     *  "status": "成功",
-     *  "data": {
-     *  "nickname": "菜福测试",
-     *  "stu_id": "201805710601",
-     *  "password": "c72a3c6ca46491c5d8a3d8ef68c6a610",
-     *  "level": 1
-     *  }
-     *}
-     *
+     * {"code":0,"status":"成功","data":163}
      *
      */
     /**
@@ -154,19 +133,34 @@ class ManagerController extends Controller
      */
     public function add(Request $request)
     {
-        $data = $this->data_handle($request);
-        if (!is_array($data)) {
-            return $data;
+        $mod = [
+            "stu_id" => ["string", "regex:/^20[\d]{8,10}$/"]
+        ];
+        if (!$request->has(array_keys($mod))) {
+            return msg(1, __LINE__);
         }
+
+        $data = $request->only(array_keys($mod));
+        if (Validator::make($data, $mod)->fails()) {
+            return msg(3, '数据格式错误' . __LINE__);
+        };
+
+        // 防止重复添加管理员
+        $manager = Manager::query()->where("stu_id", $data["stu_id"])->first();
+        if($manager) {
+            return msg(8, "管理员已存在" . __LINE__);
+        }
+
         $data = $data + [
+                "nickname" => "从未登录",
                 "level" => 1,
-                "password" => md5('never_login')
+                "password" => 'never_login'
             ];
-//        var_dump($data);
-        $Manager = new Manager($data);
-        $request = $Manager->save();
+
+        $manager = new Manager($data);
+        $request = $manager->save();
         if ($request) {
-            return msg(0, $Manager->info());
+            return msg(0, __LINE__);
         } else {
             return msg(4, __LINE__);
         }
@@ -174,30 +168,17 @@ class ManagerController extends Controller
 
 
     /**
-     * @api {post} /api/manager/register 删除管理员
+     * @api {delete} /api/manager/:id 删除管理员
      * @apiGroup 管理员
      * @apiVersion 1.0.0
      *
      *
-     * @apiParam {String} id 主键
-     * @apiParam {String} stu_id 管理员学号
+     * @apiParam {Number} id 管理员id
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
-     * @apiSuccess {String} nickname  管理员名字，真名
-     * @apiSuccess {String} stu_id    管理员学号
      *
      * @apiSuccessExample {json} Success-Response:
-     * {
-     *  "code":0,
-     *  "status":"成功",
-     *  "data":{
-     *       "id":1,
-     *       "nickname":"丁浩东",
-     *       "stu_id":"201705550820",
-     *       "level":"1",
-     *  }
-     * }
-     *
+     *{"code":0,"status":"成功","data":218}
      *
      */
     /**
@@ -206,22 +187,13 @@ class ManagerController extends Controller
      * @throws \Exception
      */
 
-    public function del(Request $request)
+    public function delete(Request $request)
     {
-        $mod = array(
-            'id' => ['regex:/^[\d]{1,3}$/']
-        );
-        if (!$request->has(array_keys($mod))) {
-            return msg(1, __LINE__);
+        $manager = Manager::query()->find($request->route("id"));
+        if (!$manager) {
+            return msg(3, "目标不存在" . __LINE__);
         }
-        $data = $request->only(array_keys($mod));
-
-        if (Validator::make($data, $mod)->fails()) {
-            return msg(3, '数据格式错误' . __LINE__);
-        };
-
-        $Manager = Manager::query()->find($data['id']);
-        $result = $Manager->delete();
+        $result = $manager->delete();
         if ($result) {
             return msg(0, __LINE__);
         } else {
@@ -231,134 +203,50 @@ class ManagerController extends Controller
 
 
     /**
-     * @api {post} /api/manager/register 遍历管理员
+     * @api {get} /api/manager/list 获取管理员列表
      * @apiGroup 管理员
      * @apiVersion 1.0.0
      *
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
-     * @apiSuccess {String} nickname  管理员名字，真名
+     * @apiSuccess {String} nickname  管理员名字，真名,或从未登录者返回从未登录
      * @apiSuccess {String} stu_id    管理员学号
+     * @apiSuccess {String} level     管理员级别
      *
      * @apiSuccessExample {json} Success-Response:
      * {
      *  "code":0,
      *  "status":"成功",
-     *  "data":{
-     *       "id":1,
-     *       "nickname":"丁浩东",
-     *       "stu_id":"201705550820",
-     *       "level":"1",
-     *  }
+     *  "data":[
+     *      {
+     *          "id":"5",
+     *          "nickname":"从未登录",
+     *          "stu_id":"201705550820",
+     *          "level":"普通管理员"
+     *      },
+     *      {
+     *          "id":"6",
+     *          "nickname":"从未登录",
+     *          "stu_id":"201705550716",
+     *          "level":"普通管理员"
+     *      }
+     *  ]
      * }
-     *
      *
      */
     public function list()
     {
+        $manager_list = Manager::query()->get(['id', 'nickname', 'stu_id', 'level'])->toArray();
+        $level = [
+            "0" => "超级管理员",
+            "1" => "普通管理员"
+        ];
 
-        $Manage = Manager::query()->get(['nickname', 'stu_id', 'level'])->toArray();
-        list_all($Manage);
-
-//        array_walk($Manage, "test");
-    }
-
-
-/**
- * @api {post} /api/evaluation/:id 编辑管理员信息
- * @apiGroup 管理员
- * @apiVersion 1.0.0
- *
- * @apiDescription 编辑管理员信息，所有内容皆不为空
- *
- * @apiParam {String} nickname   姓名
- * @apiParam {String} password   密码
- *
- *
- * @apiSuccess {Number} code      状态码，0：请求成功
- * @apiSuccess {String} nickname  管理员名字，真名
- * @apiSuccess {String} stu_id    管理员学号
- * @apiSuccess {Json}   level        管理员等级
- *
- * @apiSuccessExample {json} Success-Response:
- * {
- *  "code":0,
- *  "status":"成功",
- *  "data":{
- *       "nickname":"张桂福",
- *       "stu_id":"201805710601",
- *       "password":"caifu",
- *       "level":"1",
- *  }
- * }
- *
- */
-/**
- * @param Request $request
- * @return string
- */
-public function update(Request $request)
-{
-    //检查数据类型格式是否有误，data_change在最下面
-    $data = $this->data_change($request);
-
-    if (!is_array($data)) {
-        return $data;
-    }
-    $Manager = Manager::query()->find($data["id"]);
-    //修改参数
-    $data = [
-        'nickname' => $data['nickname'],
-        'password' => $data['password']
-    ];
-    $Manager->update($data);
-    if ($Manager) {
-        if ($Manager) {
-            return msg(0, $Manager->info());
-        } else {
-            return msg(4, __LINE__);
+        foreach ($manager_list as &$manager) {
+            $manager["level"] = $level[$manager["level"]];
         }
+
+        return msg(0, $manager_list);
     }
-    return msg(4, __LINE__);
-}
-
-
-private function data_handle(Request $request = null)
-{
-    $mod = [
-        "nickname" => ["string", "max:15"],
-        "stu_id" => ["string", "max:12"]
-    ];
-    if (!$request->has(array_keys($mod))) {
-        return msg(1, __LINE__);
-    }
-
-    $data = $request->only(array_keys($mod));
-    if (Validator::make($data, $mod)->fails()) {
-        return msg(3, '数据格式错误' . __LINE__);
-    };
-
-    return $data;
-}
-
-private function data_change(Request $request = null)
-{
-    $mod = [
-        "id" => ["string", 'max:3'],
-        "nickname" => ["string", "max:15"],
-        "password" => ["string", "max:20"]
-    ];
-    if (!$request->has(array_keys($mod))) {
-        return msg(1, __LINE__);
-    }
-
-    $data = $request->only(array_keys($mod));
-    if (Validator::make($data, $mod)->fails()) {
-        return msg(3, '数据格式错误' . __LINE__);
-    };
-
-    return $data;
-}
-
 
 }
