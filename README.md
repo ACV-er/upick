@@ -55,3 +55,14 @@ if (Validator::make($data, $mod)->fails()) {
 ## 数据文件
 * mysql 数据文件挂载在 dockercnf/mysql5.7/db_data
 * redis 数据文件挂载在 dockercnf/redis/[redis容器名]_data
+
+## session解释
+
+|     session    |    意义    |
+| :------------: | :----------------: |
+|    `login`     |     用户是否登陆   |
+|     `uid`      |   当前登录用户id   |
+| `ManagerLogin` |   管理员是否登陆   |
+|     `mid`      |  当前登录管理员id  |
+|    `level`     | 当前登录管理员等级 |
+

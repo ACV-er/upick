@@ -182,7 +182,7 @@ class EvaluationController extends Controller
         $evaluation = Evaluation::query()->find($request->route('id'));
 
         // 将该评测从我的发布中删除
-        User::query()->find(session("uid"))->del_publish($evaluation->id);
+        User::query()->find($evaluation->publisher)->del_publish($evaluation->id);
         $evaluation->delete();
 
         return msg(0, __LINE__);

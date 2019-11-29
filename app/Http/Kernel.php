@@ -66,7 +66,8 @@ class Kernel extends HttpKernel
         'manager.login.check' => \App\Http\Middleware\Manager\LoginCheck::class,
         'evaluation.exist.check' => \App\Http\Middleware\Evaluation\ExistCheck::class,
         'manager.super.check' => \App\Http\Middleware\Manager\SuperPowerCheck::class,
-        'food.exist.check' => \App\Http\Middleware\Food\ExistCheck::class
+        'food.exist.check' => \App\Http\Middleware\Food\ExistCheck::class,
+        'owner.check' => \App\Http\Middleware\Evaluation\OwnerCheck::class
     ];
 
     /**

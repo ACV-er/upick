@@ -14,7 +14,7 @@ class LikeController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 用户赞踩评测，可取消，变换赞踩
+     * @apiDescription 用户赞踩评测，可取消，变换赞踩。登陆后可操作
      *
      * @apiParam {Number}  id        评测id
      * @apiParam {Number}  like      是否赞 0踩 1赞

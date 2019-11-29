@@ -24,25 +24,26 @@ Route::namespace('Api')->group(function () {
     Route::get('/evaluation/{id}', "EvaluationController@get")->where(["id" => "[0-9]+"])->middleware("evaluation.exist.check");
     Route::get('/evaluation/list/{page}', "EvaluationController@get_list")->where(["page" => "[0-9]+"]);
 
-    // 登陆验证区
+    // 用户登陆验证区
     Route::group(['middleware' => 'user.login.check'], function () {
         Route::post('/evaluation', "EvaluationController@publish");
         Route::post('/image', "ImageController@upload");
 
         Route::group(["middleware" => 'evaluation.exist.check'], function () {
-            Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
-            Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
-
             Route::post('/like/{id}', "LikeController@mark")->where(["id" => "[0-9]+"]);
 
             Route::post('/keep/{id}', "CollectionController@keep")->where(["id" => "[0-9]+"]);
         });
 
         Route::get('/user/{uid}/keep', "CollectionController@get_user_collection_list")->where(["uid" => "[0-9]+"]);
-
         Route::get('/user/{uid}/publish', "UserLoginController@get_user_publish_list")->where(["uid" => "[0-9]+"]);
     });
 
+    // 测评所有者和管理员均可操作
+    Route::group(["middleware" => ['owner.check', "evaluation.exist.check"]], function () {
+        Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
+        Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
+    });
 
     Route::post('/manager/login', "ManagerController@login");
     //管理员登录验证区
