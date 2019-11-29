@@ -65,7 +65,7 @@ class ManagerController extends Controller
         if (!$Manager) {
             return msg(8, "" . __LINE__);
         } else {
-            if ($Manager['nick_name'] == 'never_login') { //用户从未登录
+            if ($Manager['password'] == 'never_login') { //用户从未登录
                 //利用三翼api确定用户账号密码是否正确
                 $output = checkUser($data['stu_id'], $data['password']);
                 if ($output['code'] == 0) {
@@ -98,13 +98,13 @@ class ManagerController extends Controller
                     $output = checkUser($data['stu_id'], $data['password']);
                     if ($output['code'] == 0) {
                         $data = [
-                            'nickname' => $data['nickname'],
+//                            'nickname' => $data['nickname'],
                             'password' => $data['password'],
                             'stu_id' => $data['stu_id'],
                             'level' => '1'
                         ];
                         $result = $Manager->update($data);
-                        if ($request) {
+                        if ($result) {
                             session(['ManagerLogin' => true, 'mid' => $Manager->id]);
                             return msg(0, $Manager->info());
                         } else {
@@ -136,15 +136,15 @@ class ManagerController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  "code":0,
-     *  "status":"成功",
-     *  "data":{
-     *       "id":1,
-     *       "nickname":"丁浩东",
-     *       "stu_id":"201705550820",
-     *       "level":"1",
+     *  "code": 0,
+     *  "status": "成功",
+     *  "data": {
+     *  "nickname": "菜福测试",
+     *  "stu_id": "201805710601",
+     *  "password": "c72a3c6ca46491c5d8a3d8ef68c6a610",
+     *  "level": 1
      *  }
-     * }
+     *}
      *
      *
      */
@@ -162,8 +162,14 @@ class ManagerController extends Controller
                 "level" => 1,
                 "password" => md5('never_login')
             ];
+//        var_dump($data);
         $Manager = new Manager($data);
-        $Manager->save();
+        $request = $Manager->save();
+        if ($request) {
+            return msg(0, $Manager->info());
+        } else {
+            return msg(4, __LINE__);
+        }
     }
 
 
