@@ -63,7 +63,7 @@ class EvaluationController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 更新评测，登陆后可操作,用户只能编辑自己的评测
+     * @apiDescription 更新评测，登陆后可操作,用户只能编辑自己的评测 管理员可编辑任何评测
      *
      * @apiParam {Number} id         需要更新的测评对应的id
      * @apiParam {String} title      评测标题 长度50
@@ -158,11 +158,11 @@ class EvaluationController extends Controller
     }
 
     /**
-     * @api {delete} /api/evaluation/:id 用户删除评测
+     * @api {delete} /api/evaluation/:id 删除评测
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 用户删除评测，登陆后可操作
+     * @apiDescription 用户删除评测，登陆后可操作。管理员可删除任何评测
      *
      * @apiParam {Number}   id   评测id
      *
