@@ -17,7 +17,7 @@ class EvaluationController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 发布评测
+     * @apiDescription 发布评测，登陆后可操作
      *
      * @apiParam {String} title      评测标题 长度50
      * @apiParam {String} content    评测内容 长度400
@@ -63,7 +63,7 @@ class EvaluationController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 更新评测
+     * @apiDescription 更新评测，登陆后可操作,用户只能编辑自己的评测
      *
      * @apiParam {Number} id         需要更新的测评对应的id
      * @apiParam {String} title      评测标题 长度50
@@ -162,7 +162,7 @@ class EvaluationController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 用户删除评测
+     * @apiDescription 用户删除评测，登陆后可操作
      *
      * @apiParam {Number}   id   评测id
      *

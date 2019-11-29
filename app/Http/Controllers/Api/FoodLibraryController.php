@@ -17,7 +17,7 @@ class FoodLibraryController extends Controller
      * @apiGroup 美食库
      * @apiVersion 1.0.0
      *
-     * @apiDescription 发布美食信息
+     * @apiDescription 发布美食信息，管理员登陆可操作
      *
      * @apiParam {String} food_name  美食名称 长度40
      * @apiParam {String} location   地点（联建黄焖鸡米饭等 长度50
@@ -28,7 +28,7 @@ class FoodLibraryController extends Controller
      * @apiSuccess {Object} data      后端参考信息，前端无关
      *
      * @apiSuccessExample {json} Success-Response:
-     * {"code":0,"status":"成功","data":35}
+     * {"code":0,"status":"成功","data":49}
      *
      *
      */
@@ -46,7 +46,6 @@ class FoodLibraryController extends Controller
         $food = new Food($data);
 
         if($food->save()) {
-
             return msg(0, __LINE__);
         }
 
@@ -54,11 +53,11 @@ class FoodLibraryController extends Controller
     }
 
     /**
-     * @api {post} /api/food/:id 更新美食信息
+     * @api {put} /api/food/:id 更新美食信息
      * @apiGroup 美食库
      * @apiVersion 1.0.0
      *
-     * @apiDescription 更新美食信息
+     * @apiDescription 更新美食信息，管理员登陆可操作
      *
      * @apiParam {Number} id         需要更新的测评对应的id
      * @apiParam {String} food_name  美食名称 长度40
@@ -70,7 +69,7 @@ class FoodLibraryController extends Controller
      * @apiSuccess {Object} data      后端参考信息，前端无关
      *
      * @apiSuccessExample {json} Success-Response:
-     * {"code":0,"status":"成功","data":35}
+     * {"code":0,"status":"成功","data":89}
      *
      *
      */
@@ -98,7 +97,7 @@ class FoodLibraryController extends Controller
      * @apiGroup 美食库
      * @apiVersion 1.0.0
      *
-     * @apiDescription 删除美食信息
+     * @apiDescription 删除美食信息，管理员登陆可操作
      *
      * @apiParam {Number}   id   美食信息id
      *
@@ -117,7 +116,6 @@ class FoodLibraryController extends Controller
     public function delete(Request $request) {
         $food = Food::query()->find($request->route('id'));
 
-        // 将该评测从我的发布中删除
         $food->delete();
 
         return msg(0, __LINE__);
@@ -129,7 +127,7 @@ class FoodLibraryController extends Controller
      * @apiGroup 美食库
      * @apiVersion 1.0.0
      *
-     * @apiDescription 获取美食信息列表
+     * @apiDescription 获取美食信息列表，管理员登陆可操作
      *
      * @apiParam {Number} page      页码数，从1开始
      *

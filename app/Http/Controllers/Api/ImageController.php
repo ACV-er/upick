@@ -16,7 +16,7 @@ class ImageController extends Controller
      * @apiName 图片上传
      * @apiVersion 1.0.0
      *
-     * @apiDescription 接口描述
+     * @apiDescription 上传图片，返回url。登陆后可操作
      *
      * @apiParam {File}  image  图片文件
      *

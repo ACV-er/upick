@@ -55,7 +55,13 @@ Route::namespace('Api')->group(function () {
             Route::post('/manager/add', "ManagerController@add");
             Route::delete('/manager/{id}', "ManagerController@delete")->where(["id" => "[0-9]+"]);
         });
-    });
 
-    Route::get('/food/list/{page}',"FoodLibraryController@get_list")->where(["page" => "[0-9]+"]);
+        // 美食库区域
+        Route::post('/food',"FoodLibraryController@publish");
+        Route::group(['middleware' => 'food.exist.check'], function (){
+            Route::put('/food/{id}',"FoodLibraryController@update")->where(["id" => "[0-9]+"]);
+            Route::delete('/food/{id}',"FoodLibraryController@delete")->where(["id" => "[0-9]+"]);
+        });
+        Route::get('/food/list/{page}',"FoodLibraryController@get_list")->where(["page" => "[0-9]+"]);
+    });
 });
