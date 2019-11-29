@@ -209,7 +209,7 @@ class ManagerController extends Controller
     public function del(Request $request)
     {
         $mod = array(
-            'id' => ['regex:/^20[\d]{1,3}$/']
+            'id' => ['regex:/^[\d]{1,3}$/']
         );
         if (!$request->has(array_keys($mod))) {
             return msg(1, __LINE__);
