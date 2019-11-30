@@ -39,7 +39,11 @@ Route::namespace('Api')->group(function () {
     });
 
     // 管理员和用户都可以使用
-    Route::post('/image', "ImageController@upload")->middleware("login.check");
+    Route::group(['middleware' => 'login.check'], function () {
+        Route::post('/image', "ImageController@upload");
+
+        Route::get('/activity/top',"ActivityController@get_top");
+    });
 
     // 测评所有者和管理员均可操作
     Route::group(["middleware" => ['owner.check', "evaluation.exist.check"]], function () {
@@ -66,5 +70,13 @@ Route::namespace('Api')->group(function () {
             Route::delete('/food/{id}',"FoodLibraryController@delete")->where(["id" => "[0-9]+"]);
         });
         Route::get('/food/list/{page}',"FoodLibraryController@get_list")->where(["page" => "[0-9]+"]);
+
+        // 商家活动信息改动区
+        Route::post('/activity',"ActivityController@publish");
+        Route::put('/activity/{id}',"ActivityController@update")->where(["id" => "[0-9]+"]);
+        Route::delete('/activity/{id}',"ActivityController@delete")->where(["id" => "[0-9]+"]);
+        Route::get('/activity/list/{page}',"ActivityController@get_list")->where(["page" => "[0-9]+"]);
+        Route::put('/activity/top/{id}',"ActivityController@top")->where(["id" => "[0-9]+"]);
+        Route::put('/activity/untop/{id}',"ActivityController@untop")->where(["id" => "[0-9]+"]);
     });
 });

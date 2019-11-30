@@ -59,7 +59,7 @@ class FoodLibraryController extends Controller
      *
      * @apiDescription 更新美食信息，管理员登陆可操作
      *
-     * @apiParam {Number} id         需要更新的测评对应的id
+     * @apiParam {Number} id         需要更新的美食信息对应的id
      * @apiParam {String} food_name  美食名称 长度40
      * @apiParam {String} location   地点（联建黄焖鸡米饭等 长度50
      * @apiParam {Json}   img        图片数组，内为图片url（上传图片时返回）
