@@ -105,7 +105,7 @@ class EvaluationController extends Controller
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
-     * @apiDescription 获取单篇评测详细信息，返回参数与发布更新同名请求参数意义一致，不同名参数已写出
+     * @apiDescription 获取单篇评测详细信息， 会计算浏览量。返回参数与发布更新同名请求参数意义一致，不同名参数已写出
      *
      * @apiParam {Number} id      评测id
      *
@@ -153,6 +153,11 @@ class EvaluationController extends Controller
      */
     public function get(Request $request) {
         $evaluation = Evaluation::query()->find($request->route('id'));
+        if(!session()->has("mark" . $request->route('id'))
+            || session("mark" . $request->route('id')) + 1800 < time()) {
+            $evaluation->increment("views");
+            session(["mark" => time()]);
+        }
 
         return msg(0, $evaluation->info());
     }
