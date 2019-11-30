@@ -235,7 +235,7 @@ class EvaluationController extends Controller
                                                 "collections","img", "title", "location", "shop_name", "evaluations.created_at as time"])
                                             ->toArray();
         if($request->route("page") == 1) {
-            $evaluation_list = $this->get_orderBy_score_list() + $evaluation_list;
+            $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
 
         return msg(0, $evaluation_list);

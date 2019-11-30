@@ -43,6 +43,7 @@ Route::namespace('Api')->group(function () {
         Route::post('/image', "ImageController@upload");
 
         Route::get('/activity/top',"ActivityController@get_top");
+        Route::get('/foodchannel/list/{page}',"FoodChannelController@get_list")->where(["page" => "[0-9]+"]);
     });
 
     // 测评所有者和管理员均可操作
@@ -78,5 +79,12 @@ Route::namespace('Api')->group(function () {
         Route::get('/activity/list/{page}',"ActivityController@get_list")->where(["page" => "[0-9]+"]);
         Route::put('/activity/top/{id}',"ActivityController@top")->where(["id" => "[0-9]+"]);
         Route::put('/activity/untop/{id}',"ActivityController@untop")->where(["id" => "[0-9]+"]);
+
+        // 美食专栏
+        Route::post('/foodchannel',"FoodChannelController@publish");
+        Route::put('/foodchannel/{id}',"FoodChannelController@update")->where(["id" => "[0-9]+"]);
+        Route::delete('/foodchannel/{id}',"FoodChannelController@delete")->where(["id" => "[0-9]+"]);
+        Route::put('/foodchannel/top/{id}',"FoodChannelController@top")->where(["id" => "[0-9]+"]);
+        Route::put('/foodchannel/untop/{id}',"FoodChannelController@untop")->where(["id" => "[0-9]+"]);
     });
 });

@@ -3,21 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Activity;
+use App\Models\FoodChannel;
+use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ActivityController extends Controller
+class FoodChannelController extends Controller
 {
     //
     /**
-     * @api {post} /api/activity 发布商家活动信息
-     * @apiGroup 商家活动
+     * @api {post} /api/foodchannel 发布美食专栏信息
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 发布商家活动信息，管理员登陆可操作。默认状态为非置顶
+     * @apiDescription 发布美食专栏信息，管理员登陆可操作。默认状态为非置顶
      *
-     * @apiParam {String} activity_name  商家活动名称 长度30
+     * @apiParam {String} title  美食专栏标题 长度30
+     * @apiParam {String} url    目标文章链接  度50
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
@@ -37,10 +39,11 @@ class ActivityController extends Controller
         if (!is_array($data)) {
             return $data;
         }
-        $data = $data + ["top" => 0];
-        $activity = new Activity($data);
+        $data = $data + ["top" => 0,
+                "editor" => Manager::query()->find(session("mid"))->nickname];
+        $foodchannel = new FoodChannel($data);
 
-        if ($activity->save()) {
+        if ($foodchannel->save()) {
             return msg(0, __LINE__);
         }
 
@@ -48,14 +51,15 @@ class ActivityController extends Controller
     }
 
     /**
-     * @api {put} /api/activity/:id 更新商家活动信息
-     * @apiGroup 商家活动
+     * @api {put} /api/foodchannel/:id 更新美食专栏信息
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 更新商家活动信息，管理员登陆可操作
+     * @apiParam {Number} id         需要更新的美食专栏对应的id
      *
-     * @apiParam {Number} id         需要更新的商家活动对应的id
-     * @apiParam {String} activity_name  商家活动名称 长度30
+     * @apiParam {String} title  美食专栏标题 长度30
+     * @apiParam {String} url    目标文章链接  度50
+     *
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
@@ -77,13 +81,13 @@ class ActivityController extends Controller
             return $data;
         }
 
-        $activity = Activity::query()->find($request->route('id'));
-        if(!$activity) {
+        $data = $data + ["editor" => Manager::query()->find(session("mid"))->nickname];
+        $foodchannel = FoodChannel::query()->find($request->route('id'));
+        if(!$foodchannel) {
             return msg(3, "目标不存在" . __LINE__);
         }
 
-        $activity = $activity->update($data);
-        if ($activity) {
+        if ($foodchannel->update($data)) {
             return msg(0, __LINE__);
         }
 
@@ -91,13 +95,13 @@ class ActivityController extends Controller
     }
 
     /**
-     * @api {delete} /api/activity/:id 删除商家活动信息
-     * @apiGroup 商家活动
+     * @api {delete} /api/foodchannel/:id 删除美食专栏信息
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 删除商家活动信息，管理员登陆可操作
+     * @apiDescription 删除美食专栏信息，管理员登陆可操作
      *
-     * @apiParam {Number}   id   商家活动信息id
+     * @apiParam {Number}   id   美食专栏信息id
      *
      * @apiSuccess {Number} code     状态码，0：请求成功
      * @apiSuccess {String} message  提示信息
@@ -113,12 +117,12 @@ class ActivityController extends Controller
      */
     public function delete(Request $request)
     {
-        $activity = Activity::query()->find($request->route('id'));
-        if(!$activity) {
+        $foodchannel = FoodChannel::query()->find($request->route('id'));
+        if(!$foodchannel) {
             return msg(3, "目标不存在" . __LINE__);
         }
 
-        $activity->delete();
+        $foodchannel->delete();
 
         return msg(0, __LINE__);
     }
@@ -126,21 +130,21 @@ class ActivityController extends Controller
 
 
     /**
-     * @api {get} /api/activity/list/:page 获取商家活动信息列表
-     * @apiGroup 商家活动
+     * @api {get} /api/foodchannel/list/:page 获取美食专栏信息列表,每页10条
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 获取商家活动信息列表，管理员登陆可操作
+     * @apiDescription 获取美食专栏信息列表，管理员登陆可操作
      *
      * @apiParam {Number} page      页码数，从1开始
      *
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
      * @apiSuccess {Object} data            返回参数
-     * @apiSuccess {Number} id              该条商家活动对应id
+     * @apiSuccess {Number} id              该条美食专栏对应id
      * @apiSuccess {Number} top             是否置顶
-     * @apiSuccess {String} activity_info   商家活动信息
-     * @apiSuccess {String} time            商家活动发布时间
+     * @apiSuccess {String} foodchannel_info   美食专栏信息
+     * @apiSuccess {String} time            美食专栏发布时间
      *
      * @apiSuccessExample {json} Success-Response:
      * {
@@ -153,23 +157,34 @@ class ActivityController extends Controller
      */
     public function get_list(Request $request)
     {
-        $offset = $request->route("page") * 7 - 7;
+        $offset = $request->route("page") * 10 - 10;
+        $limit = 10;
+        $foodchannel_list = [];
 
-        $activity_list = Activity::query()->limit(7)->offset($offset)->orderByDesc("updated_at")
-            ->get(["id", "activity_info", "top", "updated_at"])
-            ->toArray();
+        if($request->route("page") == 1) { //第一页先带上置顶
+            $top = FoodChannel::query()->where("top", "=", "1")->first(["id","editor" , "title", "url", "top", "updated_at"])->toArray();
+            if($top) { //如果存在置顶 则加入第一条
+                $foodchannel_list[] = $top;
+                $limit = 9; // 如果已经有一条置顶在列表中，则下面只获取9条数据即可
+            }
+        }
 
-        return msg(0, $activity_list);
+        $foodchannel_list[] = FoodChannel::query()->limit($limit)->offset($offset)->where("top", "=", "0")
+                                                                    ->orderByDesc("updated_at")
+                                                                    ->get(["id","editor" , "title", "url", "top", "updated_at"])
+                                                                    ->toArray();
+
+        return msg(0, $foodchannel_list);
     }
 
     /**
-     * @api {put} /api/activity/top/:id  商家活动置顶
-     * @apiGroup 商家活动
+     * @api {put} /api/foodchannel/top/:id  美食专栏置顶
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 使对应id商家活动置顶，即被展示。并取消其他置顶。管理员登陆可操作
+     * @apiDescription 使对应id美食专栏置顶，即被展示。并取消其他置顶。管理员登陆可操作
      *
-     * @apiParam {Number} id      该条商家活动对应id
+     * @apiParam {Number} id      该条美食专栏对应id
      *
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
@@ -184,16 +199,16 @@ class ActivityController extends Controller
      */
     public function top(Request $request)
     {
-        $activity = Activity::query()->find($request->route("id"));
-        if (!$activity) {
+        $foodchannel = FoodChannel::query()->find($request->route("id"));
+        if (!$foodchannel) {
             return msg(3, "目标不存在" . __LINE__);
         }
-        $old = Activity::query()->where("top", "=", "1")->first();
+        $old = FoodChannel::query()->where("top", "1")->first();
         if($old) {
             $old->update(["top" => 0]);
         }
 
-        if ($activity->update(["top" => 1])) {
+        if ($foodchannel->update(["top" => 1])) {
             return msg(0, __LINE__);
         }
 
@@ -201,13 +216,13 @@ class ActivityController extends Controller
     }
 
     /**
-     * @api {put} /api/activity/untop/:id  商家活动取消置顶
-     * @apiGroup 商家活动
+     * @api {put} /api/foodchannel/untop/:id  美食专栏取消置顶
+     * @apiGroup 美食专栏
      * @apiVersion 1.0.0
      *
-     * @apiDescription 使对应id商家活动取消其他置顶。管理员登陆可操作
+     * @apiDescription 使对应id美食专栏取消其他置顶。管理员登陆可操作
      *
-     * @apiParam {Number} id      该条商家活动对应id
+     * @apiParam {Number} id      该条美食专栏对应id
      *
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
@@ -222,60 +237,16 @@ class ActivityController extends Controller
      */
     public function untop(Request $request)
     {
-        $activity = Activity::query()->find($request->route("id"));
-        if (!$activity) {
+        $foodchannel = FoodChannel::query()->find($request->route("id"));
+        if (!$foodchannel) {
             return msg(3, "目标不存在" . __LINE__);
         }
 
-
-        if ($activity->update(["top" => 0])) {
+        if ($foodchannel->update(["top" => 0])) {
             return msg(0, __LINE__);
         }
 
         return msg(4, __LINE__);
-    }
-
-    /**
-     * @api {get} /api/activity/top  获取置顶商家活动
-     * @apiGroup 商家活动
-     * @apiVersion 1.0.0
-     *
-     * @apiDescription    获取置顶商家活动
-     *
-     * @apiParam {Number} id      该条商家活动对应id
-     *
-     * @apiSuccess {Number} code            状态码，0：请求成功
-     * @apiSuccess {String} message         提示信息
-     * @apiSuccess {Object} data            返回参数
-     * @apiSuccess {Number} id              该条活动id
-     * @apiSuccess {String} activity_info   商家活动内容
-     * @apiSuccess {Number} top             是否被置顶，1为置顶
-     * @apiSuccess {String} updated_at      最后更新时间
-     *
-     * @apiSuccessExample {json} Success-Response:
-     * {
-     *  "code":0,
-     *  "status":"成功",
-     *  "data":{
-     *      "id":1,
-     *      "activity_info":"蜜雪冰城买二送一",
-     *      "top":1,
-     *      "updated_at":"2019-11-30 11:03:31"
-     *  }
-     * }
-     */
-    /**
-     * @param Request $request
-     * @return string
-     */
-    public function get_top(Request $request)
-    {
-        $activity = Activity::query()->where("top", "=", "1")->first(["id", "activity_info", "top", "updated_at"]);
-        if (!$activity) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
-
-        return msg(0, $activity);
     }
 
     /** 检查，成功返回data数组
@@ -285,7 +256,8 @@ class ActivityController extends Controller
     private function data_handle(Request $request = null)
     {
         $mod = [
-            "activity_info" => ["string", "max:30"],
+            "title" => ["string", "max:30"],
+            "url"   => ["string", "max:50"]
         ];
         if (!$request->has(array_keys($mod))) {
             return msg(1, __LINE__);
@@ -298,4 +270,5 @@ class ActivityController extends Controller
 
         return $data;
     }
+
 }
