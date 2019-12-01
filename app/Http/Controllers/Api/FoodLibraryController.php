@@ -7,6 +7,8 @@ use App\Models\Food;
 use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Redis;
+use Exception;
 
 class FoodLibraryController extends Controller
 {
@@ -161,6 +163,94 @@ class FoodLibraryController extends Controller
         return msg(0, $food_list);
     }
 
+    /**
+     * @api {get} /api/food 获取推荐美食信息
+     * @apiGroup 美食库
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 用户登陆后可访问
+     *
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     *
+     * @apiSuccess {String} food_name    美食名称 长度40
+     * @apiSuccess {String} location     地点（联建黄焖鸡米饭等 长度50
+     * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
+     * @apiSuccess {data}   updated_at   最后更新时间
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *  太长 不展示了
+     * }
+     */
+    public function get() {
+        try {
+            $redis = new Redis();
+            $redis->connect('food_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+
+        $info = $redis->hGetAll(session("uid")); // 获取该用户相关信息
+        if(empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
+            $info["date"] = date("Y-m-d");
+            $info["times"] = 0;
+            $info["id"] = Food::query()->inRandomOrder()->first()->id;
+            $redis->hMSet(session("uid"), $info);
+        }
+
+        return msg(0, Food::query()->find($info["id"]));
+    }
+
+    /**
+     * @api {get} /api/food/new 获取另一条推荐美食信息
+     * @apiGroup 美食库
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 用户登陆后可访问，每天使用三次.次数用完后返回code为9
+     *
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     *
+     * @apiSuccess {String} food_name    美食名称 长度40
+     * @apiSuccess {String} location     地点（联建黄焖鸡米饭等 长度50
+     * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
+     * @apiSuccess {data}   updated_at   最后更新时间
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *  太长 不展示了
+     * }
+     */
+    public function fresh() {
+        try {
+            $redis = new Redis();
+            $redis->connect('food_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+
+        $info = $redis->hGetAll(session("uid")); // 获取该用户相关信息
+        if(empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
+            $info["date"] = date("Y-m-d");
+            $info["times"] = 0;
+            $info["id"] = Food::query()->inRandomOrder()->first()->id;
+            $redis->hMSet(session("uid"), $info);
+        } else {
+            if($info["times"] < 3) {
+                $info["times"] += 1;
+                $info["id"] = Food::query()->inRandomOrder()->first()->id;
+                $redis->hMSet(session("uid"), $info);
+            } else {
+                return msg(9, "今日无法刷新" . __LINE__);
+            }
+        }
+
+        return msg(0, Food::query()->find($info["id"]));
+    }
+
     /** 检查，成功返回data数组
      * @param Request|null $request
      * @return array|string
@@ -169,7 +259,8 @@ class FoodLibraryController extends Controller
         $mod = [
             "img"       => ["json"],
             "location"  => ["string", "max:50"],
-            "food_name" => ["string", "max:40"]
+            "food_name" => ["string", "max:40"],
+            "shop_name" => ["string", "max:20"]
         ];
         if (!$request->has(array_keys($mod))) {
             return msg(1, __LINE__);

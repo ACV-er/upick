@@ -17,6 +17,7 @@ class CreateFoodsTable extends Migration
             $table->bigIncrements('id');
             $table->string("food_name", 40);
             $table->string("location",50);
+            $table->string("shop_name",50);
             $table->json("img")->comment("数组");
             $table->unsignedBigInteger('publisher');
             $table->timestamps();
