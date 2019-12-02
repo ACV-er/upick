@@ -139,7 +139,8 @@ class FoodLibraryController extends Controller
      *
      * @apiSuccess {String} publish_name 发布人姓名
      * @apiSuccess {String} food_name    美食名称 长度40
-     * @apiSuccess {String} location     地点（联建黄焖鸡米饭等 长度50
+     * @apiSuccess {String} location     地点（联建等 长度50
+     * @apiSuccess {String} shop_name    店名（黄焖鸡米饭等 长度50
      * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
      * @apiSuccess {data}   time         最后更新时间
      * @apiSuccessExample {json} Success-Response:
@@ -176,7 +177,8 @@ class FoodLibraryController extends Controller
      * @apiSuccess {Object} data            返回参数
      *
      * @apiSuccess {String} food_name    美食名称 长度40
-     * @apiSuccess {String} location     地点（联建黄焖鸡米饭等 长度50
+     * @apiSuccess {String} location     地点（联建等 长度50
+     * @apiSuccess {String} shop_name    店名（黄焖鸡米饭等 长度50
      * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
      * @apiSuccess {data}   updated_at   最后更新时间
      * @apiSuccessExample {json} Success-Response:
@@ -216,7 +218,8 @@ class FoodLibraryController extends Controller
      * @apiSuccess {Object} data            返回参数
      *
      * @apiSuccess {String} food_name    美食名称 长度40
-     * @apiSuccess {String} location     地点（联建黄焖鸡米饭等 长度50
+     * @apiSuccess {String} location     地点（联建等 长度50
+     * @apiSuccess {String} shop_name    店名（黄焖鸡米饭等 长度50
      * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
      * @apiSuccess {data}   updated_at   最后更新时间
      * @apiSuccessExample {json} Success-Response:
