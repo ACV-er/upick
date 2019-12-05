@@ -17,7 +17,7 @@ class ActivityController extends Controller
      *
      * @apiDescription 发布商家活动信息，管理员登陆可操作。默认状态为非置顶
      *
-     * @apiParam {String} activity_name  商家活动名称 长度30
+     * @apiParam {String} activity_info  商家活动名称 长度30
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
@@ -55,7 +55,7 @@ class ActivityController extends Controller
      * @apiDescription 更新商家活动信息，管理员登陆可操作
      *
      * @apiParam {Number} id         需要更新的商家活动对应的id
-     * @apiParam {String} activity_name  商家活动名称 长度30
+     * @apiParam {String} activity_info  商家活动名称 长度30
      *
      * @apiSuccess {Number} code      状态码，0：请求成功
      * @apiSuccess {String} message   提示信息
@@ -144,7 +144,22 @@ class ActivityController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  0.0
+     *  "code":0,
+     *  "status":"成功",
+     *  "data":[
+     *      {
+     *          "id":1,
+     *          "activity_info":"蜜雪冰城买二送一",
+     *          "top":1,
+     *          "updated_at":"2019-11-30 11:03:31"
+     *      },
+     *      {
+     *          "id":2,
+     *          "activity_info":"蜜雪冰城买一送一",
+     *          "top":0,
+     *          "updated_at":"2019-11-30 11:03:08"
+     *      }
+     *  ]
      * }
      */
     /**
@@ -241,8 +256,6 @@ class ActivityController extends Controller
      * @apiVersion 1.0.0
      *
      * @apiDescription    获取置顶商家活动
-     *
-     * @apiParam {Number} id      该条商家活动对应id
      *
      * @apiSuccess {Number} code            状态码，0：请求成功
      * @apiSuccess {String} message         提示信息
