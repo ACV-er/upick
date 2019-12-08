@@ -51,7 +51,7 @@ Route::namespace('Api')->group(function () {
 
     // 测评所有者和管理员均可操作
     Route::group(["middleware" => ['owner.check', "evaluation.exist.check"]], function () {
-        Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"]);
+        Route::put('/evaluation/{id}', "EvaluationController@update")->where(["id" => "[0-9]+"])->name("evaluation_update");
         Route::delete('/evaluation/{id}', "EvaluationController@delete")->where(["id" => "[0-9]+"]);
     });
 

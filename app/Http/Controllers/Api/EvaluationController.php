@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evaluation;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Evaluation;
 
 class EvaluationController extends Controller
 {
@@ -23,6 +23,7 @@ class EvaluationController extends Controller
      * @apiParam {String} content    评测内容 长度400
      * @apiParam {String} location   地点（联建等 长度20
      * @apiParam {String} shop_name  店名 长度20
+     * @apiParam {String} nickname   昵称 长度10
      * @apiParam {Json}   tag        类似["不辣","汤好喝"]
      * @apiParam {Json}   img        图片数组，内为图片url（上传图片时返回）
      *
@@ -39,16 +40,17 @@ class EvaluationController extends Controller
      * @param Request $request
      * @return array|string
      */
-    public function publish(Request $request) {
+    public function publish(Request $request)
+    {
         $data = $this->data_handle($request);
-        if(!is_array($data)) {
+        if (!is_array($data)) {
             return $data;
         }
 
         $data = $data + ["collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
 
-        if($evaluation->save()) {
+        if ($evaluation->save()) {
             // 将该评测加入我的发布
             User::query()->find(session("uid"))->add_publish($evaluation->id);
 
@@ -70,6 +72,7 @@ class EvaluationController extends Controller
      * @apiParam {String} content    评测内容 长度400
      * @apiParam {String} location   地点（联建等 长度20
      * @apiParam {String} shop_name  店名 长度20
+     * @apiParam {String} nickname   昵称 长度10
      * @apiParam {Json}   tag        类似["不辣","汤好喝"]
      * @apiParam {Json}   img        图片数组，内为图片url（上传图片时返回）
      *
@@ -86,14 +89,15 @@ class EvaluationController extends Controller
      * @param Request $request
      * @return string
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $data = $this->data_handle($request);
-        if(!is_array($data)) {
+        if (!is_array($data)) {
             return $data;
         }
         $evaluation = Evaluation::query()->find($request->route('id'));
         $evaluation = $evaluation->update($data);
-        if($evaluation) {
+        if ($evaluation) {
             return msg(0, __LINE__);
         }
         return msg(4, __LINE__);
@@ -151,9 +155,10 @@ class EvaluationController extends Controller
      * @param Request $request
      * @return string
      */
-    public function get(Request $request) {
+    public function get(Request $request)
+    {
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if(!session()->has("mark" . $request->route('id'))
+        if (!session()->has("mark" . $request->route('id'))
             || session("mark" . $request->route('id')) + 1800 < time()) {
             $evaluation->increment("views");
             session(["mark" => time()]);
@@ -183,7 +188,8 @@ class EvaluationController extends Controller
      * @return string
      * @throws \Exception
      */
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $evaluation = Evaluation::query()->find($request->route('id'));
 
         // 将该评测从我的发布中删除
@@ -226,55 +232,65 @@ class EvaluationController extends Controller
      * @param Request $request
      * @return string
      */
-    public function get_list(Request $request) {
+    public function get_list(Request $request)
+    {
         $offset = $request->route("page") * 10 - 10;
 
-        $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("evaluations.created_at")
-                                            ->leftJoin("users", "evaluations.publisher", "=", "users.id")
-                                            ->get(["evaluations.id as id", "nickname as publisher_name", "tag", "views",
-                                                "collections","img", "title", "location", "shop_name", "evaluations.created_at as time"])
-                                            ->toArray();
-        if($request->route("page") == 1) {
+        $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("created_at")
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->toArray();
+        if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
 
         return msg(0, $evaluation_list);
     }
 
-    private function get_orderBy_score_list() {
+    private function get_orderBy_score_list()
+    {
         $list = Evaluation::query()->limit(20)->orderByDesc("score")
-                ->leftJoin("users", "evaluations.publisher", "=", "users.id")
-                ->get(["evaluations.id as id", "nickname as publisher_name", "tag", "views",
-                    "collections","img", "title", "location", "shop_name", "evaluations.created_at as time"])
-                ->toArray();
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->toArray();
 
         $new_list = [];
         $begin = rand(0, 20);
-        for($i = 0; $i < 3; $i+=1) {
-            $new_list[] = $list[($begin + $i*6) % count($list)];
+        for ($i = 0; $i < 3; $i += 1) {
+            $new_list[] = $list[($begin + $i * 6) % count($list)];
         }
 
         return $new_list;
     }
 
-     /** 评测检查，成功返回data数组
+    /** 评测检查，成功返回data数组
      * @param Request|null $request
      * @return array|string
      */
-    private function data_handle(Request $request=null) {
+    private function data_handle(Request $request = null)
+    {
         $mod = [
-            "img"       => ["json"],
-            "title"     => ["string", "max:50"],
-            "content"   => ["string", "max:400"],
-            "location"  => ["string", "max:20"],
+            "img" => ["json"],
+            "title" => ["string", "max:50"],
+            "content" => ["string", "max:400"],
+            "location" => ["string", "max:20"],
             "shop_name" => ["string", "max:20"],
-            "tag"       => ["json"]
+            "tag" => ["json"],
+            "nickname" => ["string", "max:10"]
         ];
         if (!$request->has(array_keys($mod))) {
             return msg(1, __LINE__);
         }
 
         $data = $request->only(array_keys($mod));
+        if ((empty($data["nickname"]) || $data["nickname"] === "")) {
+            if ($request->routeIs("evaluation_update")) {
+                $uid = Evaluation::query()->find($request->route('id'))->publisher;
+            } else {
+                $uid = session("uid");
+            }
+            $data["nickname"] = User::query()->find($uid)->nickname;
+        }
         if (Validator::make($data, $mod)->fails()) {
             return msg(3, '数据格式错误' . __LINE__);
         };

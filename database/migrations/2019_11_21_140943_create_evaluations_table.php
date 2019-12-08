@@ -26,6 +26,7 @@ class CreateEvaluationsTable extends Migration
             $table->string("content");
             $table->string("location");
             $table->string("shop_name")->comment("店名");
+            $table->string("nickname")->comment("昵称");
             $table->double("score")->index()->default(0)->comment("排序分值");
 
             $table->timestamps();
