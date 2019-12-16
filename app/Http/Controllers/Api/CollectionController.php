@@ -129,10 +129,9 @@ class CollectionController extends Controller
         $collection_id_list = array_keys(json_decode($user->collection, true));
 
         $collection_list = DB::table("evaluations")->whereIn("evaluations.id", $collection_id_list)
-            ->leftJoin("users", "evaluations.publisher", "=", "users.id")->get([
-                "evaluations.id as id", "nickname as publisher_name", "tag", "views", "collections",
-                "img", "title", "location", "shop_name", "evaluations.created_at as time"
-            ])->toArray();
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->toArray();
 
         return msg(0, $collection_list);
     }

@@ -27,7 +27,8 @@ class Evaluation extends Model
         $is_like = -1;
         $is_collection = 0;
         if (session("login")) {
-            $is_like = Like::query()->where("user", session("uid"))->where("evaluation", $this->id)->first();
+            echo "1";
+            $is_like = Like::query()->where(["user"=> session("uid"), "evaluation" => $this->id])->first();
             $is_like = $is_like ? $is_like->like : -1;
             $is_collection = key_exists($this->id, json_decode(User::query()->find(session("uid"))->collection, true));
         }
