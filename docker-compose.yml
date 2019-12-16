@@ -13,7 +13,7 @@ services:
       - php
   php:
     build: ./dockercnf/php7.3-fpm/
-    image: "upick-php:7.3-fpm"
+    image: "php:7.3-fpm"
     container_name: "upick_php"
     privileged: true
     volumes:

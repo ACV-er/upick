@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -169,7 +169,8 @@ class UserLoginController extends Controller
      * @param Request $request
      * @return string
      */
-    public function get_user_publish_list(Request $request) {
+    public function get_user_publish_list(Request $request)
+    {
         $user_id = $request->route("uid");
         $user = User::query()->find($user_id);
         if (!$user) {
@@ -178,10 +179,8 @@ class UserLoginController extends Controller
         $publish_id_list = array_keys(json_decode($user->publish, true));
 
         $publish_list = DB::table("evaluations")->whereIn("evaluations.id", $publish_id_list)
-            ->leftJoin("users", "evaluations.publisher", "=", "users.id")->get([
-                "evaluations.id as id", "nickname as publisher_name", "tag", "views", "collections",
-                "img", "title", "location", "shop_name", "evaluations.created_at as time"
-            ])->toArray();
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])->toArray();
 
         return msg(0, $publish_list);
     }

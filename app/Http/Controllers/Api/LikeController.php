@@ -72,7 +72,7 @@ class LikeController extends Controller
                     } else { // 赞变踩
                         $evaluation->increment('unlike', 1);
                         $evaluation->increment('like', -1);
-                        $like->update(["like" => -1]);
+                        $like->update(["like" => 0]);
                     }
                 } else {
                     $evaluation->increment('unlike', 1);
