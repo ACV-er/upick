@@ -213,6 +213,10 @@ class EvaluationController extends Controller
      * @apiSuccess {String} message         提示信息
      * @apiSuccess {Object} data            返回参数
      *
+     * @apiHeaderExample {json} Headers:
+     * {
+     *       "Cookie":"laravel_session=xxxxxxx"
+     * }
      * @apiSuccess {String} publisher       发布人标识
      * @apiSuccess {String} publisher_name  发布人姓名
      * @apiSuccess {Number} views           浏览量
