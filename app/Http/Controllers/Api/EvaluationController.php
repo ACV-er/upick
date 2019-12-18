@@ -61,7 +61,7 @@ class EvaluationController extends Controller
     }
 
     /**
-     * @api {post} /api/evaluation/:id 更新评测
+     * @api {put} /api/evaluation/:id 更新评测
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *

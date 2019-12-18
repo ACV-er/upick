@@ -14,8 +14,7 @@
         "fideloper/proxy": "^4.0",
         "hirak/prestissimo": "^0.3.9",
         "laravel/framework": "^6.2",
-        "laravel/tinker": "^1.0",
-        "ext-redis": "*"
+        "laravel/tinker": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
@@ -68,7 +67,7 @@
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }
