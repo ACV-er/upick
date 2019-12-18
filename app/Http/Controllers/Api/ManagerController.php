@@ -192,6 +192,8 @@ class ManagerController extends Controller
         $manager = Manager::query()->find($request->route("id"));
         if (!$manager) {
             return msg(3, "目标不存在" . __LINE__);
+        } else if($manager->level >= session("level")) {
+            return msg(3, "权限不足" .__LINE__);
         }
         $result = $manager->delete();
         if ($result) {
