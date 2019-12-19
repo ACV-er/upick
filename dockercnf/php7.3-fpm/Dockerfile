@@ -9,4 +9,5 @@ RUN sed -i "s@http://deb.debian.org@https://mirrors.aliyun.com@g" /etc/apt/sourc
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
     && docker-php-ext-install -j$(nproc) redis \
-    && docker-php-ext-install -j$(nproc) mysqli
+    && docker-php-ext-install -j$(nproc) mysqli \
+	&& docker-php-ext-install -j$(nproc) opcache
