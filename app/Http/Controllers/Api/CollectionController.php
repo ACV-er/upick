@@ -13,11 +13,11 @@ class CollectionController extends Controller
 {
     //
     /**
-     * @api {post} /api/like/:id     收藏/取消收藏评测
+     * @api {post} /api/keep/:id     收藏/取消收藏评测
      * @apiGroup 用户
      * @apiVersion 1.0.0
      *
-     * @apiDescription 用户赞踩评测，可取消，变换赞踩
+     * @apiDescription 收藏/取消收藏评测
      *
      * @apiParam {Number}  id        评测id
      * @apiParam {String}  action    keep收藏 unkeep取消收藏
