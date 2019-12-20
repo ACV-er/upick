@@ -20,7 +20,7 @@ class CollectionController extends Controller
      * @apiDescription 用户赞踩评测，可取消，变换赞踩
      *
      * @apiParam {Number}  id        评测id
-     * @apiParam {Number}  action    keep收藏 unkeep取消收藏
+     * @apiParam {String}  action    keep收藏 unkeep取消收藏
      *
      * @apiSuccess {Number} code     状态码，0：请求成功
      * @apiSuccess {String} message  提示信息
