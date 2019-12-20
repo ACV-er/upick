@@ -24,6 +24,8 @@ Route::namespace('Api')->group(function () {
     Route::get('/evaluation/{id}', "EvaluationController@get")->where(["id" => "[0-9]+"])->middleware("evaluation.exist.check");
     Route::get('/evaluation/list/{page}', "EvaluationController@get_list")->where(["page" => "[0-9]+"]);
 
+    Route::get('/evaluation/{id}/share_code', "EvaluationController@get_share_code")->where(["id" => "[0-9]+"]);
+
     // 用户登陆验证区
     Route::group(['middleware' => 'user.login.check'], function () {
         Route::post('/evaluation', "EvaluationController@publish");

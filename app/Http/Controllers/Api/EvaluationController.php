@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Lib\WeChat;
 use App\Models\Evaluation;
 use App\User;
 use Illuminate\Http\Request;
@@ -249,6 +250,44 @@ class EvaluationController extends Controller
         }
 
         return msg(0, $evaluation_list);
+    }
+
+    /**
+     * @api {get} /evaluation/:id/share_code 获取评测页二维码
+     * @apiGroup 评测
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 获取评测页二维码
+     *
+     * @apiParam {Number} id      页码数，从1开始
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     * @apiSuccess {String} code_url        二维码链接
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {
+     *  "code": 0,
+     *  "status": "成功",
+     *  "data": {
+     *      "code_url": "http://upick.myweb.com/storage/image/4.png"
+     *  }
+     * }
+     */
+    public function get_share_code(Request $request) {
+        if(file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
+            return msg(0, ["code_url" => env("APP_URL") . "/storage/image/" . $request->route("id") . ".png"]);
+        } else {
+            try {
+                $wechat = WeChat::getWeChat();
+                return $wechat->get_page_QRcode(env("APPID"), env("SECRET"), $request->route("id"));
+            } catch (\Exception $e) {
+                $message = [];
+                preg_match("/(^[.]{20})/", $e->getMessage(), $message);
+                return msg(4, (isset($message[1])?$message[1]:"未知") . __LINE__);
+            }
+        }
     }
 
     private function get_orderBy_score_list()

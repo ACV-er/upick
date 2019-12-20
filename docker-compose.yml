@@ -22,6 +22,7 @@ services:
       - db
       - image_redis_db
       - food_redis_db
+      - wechat_redis_db
   db:
     image: "mysql:5.7.28"
     container_name: "upick_mysql"
@@ -45,4 +46,9 @@ services:
     container_name: "upick_food_redis"
     volumes:
       - ./dockercnf/redis/food_redis_db/:/data
+  wechat_redis_db:
+    image: "redis:5.0.7"
+    container_name: "wechat_redis_db"
+    volumes:
+      - ./dockercnf/redis/wechat_redis_db/:/data
 
