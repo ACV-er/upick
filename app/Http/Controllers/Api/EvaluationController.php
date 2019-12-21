@@ -277,11 +277,11 @@ class EvaluationController extends Controller
      */
     public function get_share_code(Request $request) {
         if(file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
-            return msg(0, ["code_url" => env("APP_URL") . "/storage/image/" . $request->route("id") . ".png"]);
+            return msg(0, ["code_url" => config("app.url") . "/storage/image/" . $request->route("id") . ".png"]);
         } else {
             try {
                 $wechat = WeChat::getWeChat();
-                return $wechat->get_page_QRcode(env("APPID"), env("SECRET"), $request->route("id"));
+                return $wechat->get_page_QRcode(config("sky31.appid"), config("sky31.secret"), $request->route("id"));
             } catch (\Exception $e) {
                 $message = [];
                 preg_match("/(^[.]{20})/", $e->getMessage(), $message);

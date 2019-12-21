@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
  */
 function checkUser($sid, $password) { //登录验证
     $api_url = "https://api.sky31.com/edu-new/student_info.php";
-    $api_url = $api_url . "?role=" . env('ROLE') . '&hash=' . env('HASH') . '&sid=' . $sid . '&password=' . urlencode($password);
+    $api_url = $api_url . "?role=" . config("sky31.role") . '&hash=' . config("sky31.hash") . '&sid=' . $sid . '&password=' . urlencode($password);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

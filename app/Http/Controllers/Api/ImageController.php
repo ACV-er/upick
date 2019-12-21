@@ -44,7 +44,7 @@ class ImageController extends Controller
             'image' => 'max:10240'
         ]);
         if ($validator->fails()) {
-            if (env('APP_DEBUG')) {
+            if (config("app.debug")) {
                 return msg(1, '非法参数' . __LINE__ . $validator->errors());
             }
             return msg(1, '非法参数' . __LINE__);
@@ -64,7 +64,7 @@ class ImageController extends Controller
         if (!$result) {
             return msg(500, "图片保存失败" . __LINE__);
         }
-        $pic_url = env('APP_URL') . "/storage/image/" . $all_name;
+        $pic_url = config("app.url") . "/storage/image/" . $all_name;
         $redis->hSet('food_image', $pic_url, time()); // 存储图片上传时间 外部辅助脚本过期后删除
         return msg(0, $pic_url);
     }

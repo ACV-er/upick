@@ -157,7 +157,7 @@ class WeChat {
             return msg(4, $result . __LINE__);
         } else {
             file_put_contents(storage_path('app/public/image/') . $id . ".png", $result);
-            return msg(0, ["code_url" => env("APP_URL") . "/storage/image/" . $id . ".png"]);
+            return msg(0, ["code_url" => config("app.url") . "/storage/image/" . $id . ".png"]);
         }
     }
 
