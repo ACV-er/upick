@@ -8,13 +8,12 @@ if [ ! -f ".env" ]; then
 
   sleep 2
   cp .env.example .env
-  # 删除之前的sql文件,上线部署后不执行该步骤
 
+  docker exec -it upick_php chown :www-data -R ./storage
+  docker exec -it upick_php chmod g+w -R ./storage
   docker exec -it upick_php php artisan key:generate
   docker exec -it upick_php php artisan storage:link
 
   docker exec -it upick_php php artisan migrate:refresh --seed
-  docker exec -it upick_php chown :www-data -R ./
-  docker exec -it upick_php chmod g+w -R ./
 fi
 
