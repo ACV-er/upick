@@ -199,13 +199,14 @@ class FoodChannelController extends Controller
      */
     public function top(Request $request)
     {
-        $foodchannel = FoodChannel::query()->find($request->route("id"));
-        if (!$foodchannel) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
         $old = FoodChannel::query()->where("top", "1")->first();
         if($old) {
             $old->update(["top" => 0]);
+        }
+
+        $foodchannel = FoodChannel::query()->find($request->route("id"));
+        if (!$foodchannel) {
+            return msg(3, "目标不存在" . __LINE__);
         }
 
         if ($foodchannel->update(["top" => 1])) {

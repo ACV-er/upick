@@ -199,13 +199,14 @@ class ActivityController extends Controller
      */
     public function top(Request $request)
     {
-        $activity = Activity::query()->find($request->route("id"));
-        if (!$activity) {
-            return msg(3, "目标不存在" . __LINE__);
-        }
         $old = Activity::query()->where("top", "=", "1")->first();
         if($old) {
             $old->update(["top" => 0]);
+        }
+
+        $activity = Activity::query()->find($request->route("id"));
+        if (!$activity) {
+            return msg(3, "目标不存在" . __LINE__);
         }
 
         if ($activity->update(["top" => 1])) {
