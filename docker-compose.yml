@@ -33,7 +33,6 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-    privileged: true
     volumes:
       - ./dockercnf/mysql5.7/db_data:/var/lib/mysql
       - ./dockercnf/run/mysql:/var/run/mysqld
