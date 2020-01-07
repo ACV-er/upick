@@ -253,7 +253,7 @@ class EvaluationController extends Controller
     }
 
     /**
-     * @api {get} /evaluation/:id/share_code 获取评测页二维码
+     * @api {get} /api/evaluation/:id/share_code 获取评测页二维码
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
