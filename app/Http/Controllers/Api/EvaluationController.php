@@ -14,7 +14,8 @@ class EvaluationController extends Controller
     //
 
     /**
-     * @api {post} /api/evaluation 发布评测
+     * @api {post}
+     * 发布评测
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
@@ -248,8 +249,9 @@ class EvaluationController extends Controller
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-
-        return msg(0, $evaluation_list);
+        $list_count = Evaluation::query()->count();
+        $message[] = ['total'=>$list_count,'list'=>$evaluation_list];
+        return msg(0, $message);
     }
 
     /**

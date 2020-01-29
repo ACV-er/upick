@@ -38,16 +38,17 @@ class FoodLibraryController extends Controller
      * @param Request $request
      * @return array|string
      */
-    public function publish(Request $request) {
+    public function publish(Request $request)
+    {
         $data = $this->data_handle($request);
-        if(!is_array($data)) {
+        if (!is_array($data)) {
             return $data;
         }
 
         $data = $data + ["publisher" => session("mid")];
         $food = new Food($data);
 
-        if($food->save()) {
+        if ($food->save()) {
             return msg(0, __LINE__);
         }
 
@@ -79,15 +80,16 @@ class FoodLibraryController extends Controller
      * @param Request $request
      * @return string
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $data = $this->data_handle($request);
-        if(!is_array($data)) {
+        if (!is_array($data)) {
             return $data;
         }
         $food = Food::query()->find($request->route('id'));
 
         $food = $food->update($data);
-        if($food) {
+        if ($food) {
             return msg(0, __LINE__);
         }
 
@@ -115,7 +117,8 @@ class FoodLibraryController extends Controller
      * @return string
      * @throws \Exception
      */
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         $food = Food::query()->find($request->route('id'));
 
         $food->delete();
@@ -144,24 +147,58 @@ class FoodLibraryController extends Controller
      * @apiSuccess {Json}   img          图片数组，内为图片url（上传图片时返回）
      * @apiSuccess {data}   time         最后更新时间
      * @apiSuccessExample {json} Success-Response:
-     * {
-     *  太长 不展示了
-     * }
+     *{
+     *  "code": 0,
+     *  "status": "成功",
+     *  "data": [
+     *               {
+     *                  "total": 3,
+     *                  "list": [
+     *                  {
+     *                     "id": 3,
+     *                     "publisher_name": "张桂福",
+     *                     "food_name": "天香林小蛋糕",
+     *                     "location": "联建",
+     *                     "img": "{\"img\": \"http://zgf.jsky31.cn/test.JPG\"}",
+     *                     "time": "2020-01-22 05:25:29"
+     *                  },
+     *                   {
+     *                      "id": 2,
+     *                      "publisher_name": "张桂福",
+     *                      "food_name": "百香林小蛋糕",
+     *                      "location": "联建",
+     *                      "img": "{\"img\": \"http://zgf.jsky31.cn/test.JPG\"}",
+     *                      "time": "2020-01-22 05:25:22"
+     *                   },
+     *                   {
+     *                      "id": 1,
+     *                      "publisher_name": "张桂福",
+     *                      "food_name": "麦香林小蛋糕",
+     *                      "location": "联建",
+     *                      "img": "{\"img\": \"http://zgf.jsky31.cn/test.JPG\"}",
+     *                      "time": "2020-01-22 05:21:43"
+     *                }
+     *
+     *          ]
+     *}
      */
     /**
      * @param Request $request
      * @return string
      */
-    public function get_list(Request $request) {
+    public function get_list(Request $request)
+    {
         $offset = $request->route("page") * 7 - 7;
-
-        $food_list = Food::query()->limit(7)->offset($offset)->orderByDesc("foods.created_at")
+        $food_list = Food::query()->offset($offset)->limit(7)->orderByDesc("foods.created_at")
             ->leftJoin("managers", "foods.publisher", "=", "managers.id")
-            ->get(["foods.id as id", "managers.nickname as publisher_name", "food_name", "location",
-                "img", "foods.updated_at as time"])
-            ->toArray();
-
-        return msg(0, $food_list);
+            ->get([
+//                "$list_count as lis_nums",
+                "foods.id as id", "managers.nickname as publisher_name", "food_name", "location",
+                "img", "foods.updated_at as time"
+            ])->toArray();
+        $list_count = Food::query()->count();
+        $message[] = ['total'=>$list_count,'list'=>$food_list];
+        return msg(0, $message);
     }
 
     /**
@@ -186,7 +223,8 @@ class FoodLibraryController extends Controller
      *  太长 不展示了
      * }
      */
-    public function get() {
+    public function get()
+    {
         try {
             $redis = new Redis();
             $redis->connect('food_redis_db', 6379);
@@ -195,7 +233,7 @@ class FoodLibraryController extends Controller
         }
 
         $info = $redis->hGetAll(session("uid")); // 获取该用户相关信息
-        if(empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
+        if (empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
             $info["date"] = date("Y-m-d");
             $info["times"] = 0;
             $info["id"] = Food::query()->inRandomOrder()->first()->id;
@@ -227,7 +265,8 @@ class FoodLibraryController extends Controller
      *  太长 不展示了
      * }
      */
-    public function fresh() {
+    public function fresh()
+    {
         try {
             $redis = new Redis();
             $redis->connect('food_redis_db', 6379);
@@ -236,13 +275,13 @@ class FoodLibraryController extends Controller
         }
 
         $info = $redis->hGetAll(session("uid")); // 获取该用户相关信息
-        if(empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
+        if (empty($info) || $info["date"] != date("Y-m-d")) { // 新用户，或者新的一天，刷新
             $info["date"] = date("Y-m-d");
             $info["times"] = 0;
             $info["id"] = Food::query()->inRandomOrder()->first()->id;
             $redis->hMSet(session("uid"), $info);
         } else {
-            if($info["times"] < 3) {
+            if ($info["times"] < 3) {
                 $info["times"] += 1;
                 $info["id"] = Food::query()->inRandomOrder()->first()->id;
                 $redis->hMSet(session("uid"), $info);
@@ -258,7 +297,8 @@ class FoodLibraryController extends Controller
      * @param Request|null $request
      * @return array|string
      */
-    private function data_handle(Request $request=null) {
+    private function data_handle(Request $request = null)
+    {
         $mod = [
             "img"       => ["json"],
             "location"  => ["string", "max:50"],
