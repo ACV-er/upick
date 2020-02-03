@@ -9,7 +9,7 @@ class Evaluation extends Model
 {
     //
     protected $fillable = [
-        "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name", "nickname"
+        "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name", "nickname","top"
     ];
 
     public function like($action)

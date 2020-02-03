@@ -63,6 +63,8 @@ Route::namespace('Api')->group(function () {
     Route::group(['middleware' => 'manager.login.check'], function () {
         Route::post('/manager/update', "ManagerController@update");
         Route::get('/manager/list', "ManagerController@list");
+        //管理员评测置顶
+        Route::post('/evaluation/top/{id}', "EvaluationController@top")->where(["id" => "[0-9]+"]);
 
         // 超级管理员验证
         Route::group(['middleware' => 'manager.super.check'], function () {
