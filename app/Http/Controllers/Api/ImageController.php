@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use \Exception;
+use PhpMyAdmin\File;
 use \Redis;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,5 +69,50 @@ class ImageController extends Controller
         $redis->hSet('food_image', $pic_url, time()); // 存储图片上传时间 外部辅助脚本过期后删除
         return msg(0, $pic_url);
     }
+
+
+    /**
+     * /api/image 每天将未使用的图片删除
+     */
+    public function delete(Request $request) {
+        $Storage_files = [];
+        $redis_files = [];
+
+
+        $files = Storage::allFiles();   //遍历存储文件
+        if (!$files){
+            return msg(5,"文件仓库为空".__LINE__);
+        }
+        foreach ($files as $file){           //遍历结果去掉前缀
+            $test = stripos($file,"jpg");
+            if ($test){
+                $Storage_replace = str_replace("public/image/","",$file);
+                $Storage_files[] = $Storage_replace;
+            }
+        }
+
+        try {                          //遍历redis
+            $redis = new Redis();
+            $redis->connect('image_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+        $files = $redis->hkeys("food_image");
+        foreach ($files as $file){           //遍历结果去掉前缀
+            $redis_replace = str_replace("https://test.upick.com/storage/image/","",$file);
+            $redis_files[] = $redis_replace;
+        }
+        print_r($redis_files);
+
+        //删除文件
+        $intersection = array_diff($Storage_files,$redis_files); //找出存储但未使用的文件
+        $disk = Storage::disk('img');
+        foreach ($intersection as $file){   //遍历删除
+            $disk->delete($file);
+        }
+
+        return msg(0,__LINE__);
+    }
+
 
 }

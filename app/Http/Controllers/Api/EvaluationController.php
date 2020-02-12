@@ -234,29 +234,25 @@ class EvaluationController extends Controller
      *  太长 不展示了
      * }
      */
-    /**
-     * @param Request $request
-     * @return string
-     */
     public function get_list(Request $request)
     {
         $offset = $request->route("page") * 10 - 10;
 
         $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("created_at")
-            ->where("top","=","0")
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])
             ->toArray();
         if ($request->route("page") == 1) {
-            $top = Evaluation::query()->where("top","=","1")->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])->toArray();
-            $evaluation_list = array_merge($top,$this->get_orderBy_score_list(), $evaluation_list);
+            $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-        $list_count = Evaluation::query()->count();
 
-        $message[] = ['total'=>$list_count,'list'=>$evaluation_list];
-        return msg(0, $message);
+        return msg(0, $evaluation_list);
     }
+
+    /**
+     * @param Request $request
+     * @return string
+     */
 
     /**
      * @api {put} /api/evaluation/top/:id  评测置顶
@@ -340,16 +336,12 @@ class EvaluationController extends Controller
 
     private function get_orderBy_score_list()
     {
-        $list = Evaluation::query()->limit(20)->orderByDesc("score")
-            ->where("top","=","0")
-            ->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])
-            ->toArray();
 
         $new_list = [];
         $begin = rand(0, 20);
         for ($i = 0; $i < 3; $i += 1) {
-            $new_list[] = $list[($begin + $i * 6) % count($list)];
+            $new_list[$i] = ($begin + $i * 6) % 20;
+
         }
 
         return $new_list;
@@ -390,3 +382,6 @@ class EvaluationController extends Controller
         return $data;
     }
 }
+
+
+
