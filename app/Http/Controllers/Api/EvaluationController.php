@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use \Redis;
 use App\Http\Controllers\Controller;
 use App\Lib\WeChat;
 use App\Models\Evaluation;
@@ -48,9 +49,19 @@ class EvaluationController extends Controller
         if (!is_array($data)) {
             return $data;
         }
-
         $data = $data + ["top" => 0,"collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
+
+        $imgs = json_decode($data['img']);
+        try{
+            $redis = new Redis();
+            $redis->connect('image_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+        foreach ($imgs as $i){
+            $redis->hDel('food_image',$i);
+        }
 
         if ($evaluation->save()) {
             // 将该评测加入我的发布
@@ -249,10 +260,7 @@ class EvaluationController extends Controller
         return msg(0, $evaluation_list);
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
+
 
     /**
      * @api {put} /api/evaluation/top/:id  评测置顶
