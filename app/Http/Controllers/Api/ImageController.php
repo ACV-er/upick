@@ -61,8 +61,7 @@ class ImageController extends Controller
         $ext = $file->getClientOriginalExtension(); // 获取后缀
         $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
-        $extension = $file->getClientOriginalExtension();
-        if (!in_array($extension, $allow_ext)) {
+        if (!in_array($ext, $allow_ext)) {
             return msg(3, "非法文件");
         }
         $name = md5(session('uid') . time() . rand(1, 500));
