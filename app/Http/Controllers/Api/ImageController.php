@@ -59,6 +59,12 @@ class ImageController extends Controller
         }
         $file = $request->file('image');
         $ext = $file->getClientOriginalExtension(); // 获取后缀
+        $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
+
+        $extension = $file->getClientOriginalExtension();
+        if (!in_array($extension, $allow_ext)) {
+            return msg(3, "非法文件");
+        }
         $name = md5(session('uid') . time() . rand(1, 500));
         $all_name = $name . "." . $ext;
         $result = $file->move(storage_path('app/public/image/'), $all_name);
