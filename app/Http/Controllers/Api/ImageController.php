@@ -62,7 +62,7 @@ class ImageController extends Controller
         $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (!in_array($ext, $allow_ext)) {
-            return msg(3, "非法文件");
+            return msg(3, "非法文件" . __LINE__);
         }
         $name = md5(session('uid') . time() . rand(1, 500));
         $all_name = $name . "." . $ext;
