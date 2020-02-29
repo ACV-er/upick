@@ -336,11 +336,16 @@ class EvaluationController extends Controller
 
     private function get_orderBy_score_list()
     {
+        $list = Evaluation::query()->limit(20)->orderByDesc("score")
+            ->where("top","=","0")
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->toArray();
 
         $new_list = [];
         $begin = rand(0, 20);
         for ($i = 0; $i < 3; $i += 1) {
-            $new_list[$i] = ($begin + $i * 6) % 20;
+            $new_list[] = $list[($begin + $i * 6) % count($list)];
 
         }
 
