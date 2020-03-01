@@ -137,7 +137,9 @@ class UserLoginController extends Controller
      * {
      *  "code":0,
      *  "status":"成功",
-     *  "data":[
+     *  "data":{
+     *      "total" : 2,
+     *      "list" :[
      *      {
      *          "id":2,
      *          "publisher_name":"丁浩东",
@@ -162,7 +164,8 @@ class UserLoginController extends Controller
      *          "shop_name":"黃焖鸡米饭",
      *          "time":"2019-11-23 05:07:23"
      *      }
-     *  ]
+     *      ]
+     *    }
      * }
      */
     /**
@@ -181,7 +184,7 @@ class UserLoginController extends Controller
         $publish_list = DB::table("evaluations")->whereIn("evaluations.id", $publish_id_list)
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])->toArray();
-
-        return msg(0, $publish_list);
+        $message = ['total'=>count($publish_list),'list'=>$publish_list];
+        return msg(0, $message);
     }
 }

@@ -242,7 +242,37 @@ class EvaluationController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  太长 不展示了
+     *    "code": 0,
+     *    "status": "成功",
+     *    "data": {
+     *          "total": 2,
+     *          "list": [
+     *              {
+     *                  "id": 6,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "天香林90",
+     *                  "time": "2020-02-02 13:48:33"
+     *                  },
+     *              {
+     *                  "id": 1,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "树香林",
+     *                  "time": "2020-02-02 13:28:59"
+     *              }
+     *          ]
+     *       }
      * }
      */
     public function get_list(Request $request)
@@ -256,8 +286,8 @@ class EvaluationController extends Controller
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-
-        return msg(0, $evaluation_list);
+        $message = ['total'=>count($evaluation_list),'list'=>$evaluation_list];
+        return msg(0, $message);
     }
 
 
@@ -344,12 +374,15 @@ class EvaluationController extends Controller
 
     private function get_orderBy_score_list()
     {
+        $list = Evaluation::query()->limit(20)->orderByDesc("score")
+            ->get(["id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->toArray();
 
         $new_list = [];
         $begin = rand(0, 20);
         for ($i = 0; $i < 3; $i += 1) {
-            $new_list[$i] = ($begin + $i * 6) % 20;
-
+            $new_list[] = $list[($begin + $i * 6) % count($list)];
         }
 
         return $new_list;
