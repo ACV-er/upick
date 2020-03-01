@@ -375,6 +375,10 @@ class EvaluationController extends Controller
     private function get_orderBy_score_list()
     {
         $list = Evaluation::query()->limit(20)->orderByDesc("score")
+<<<<<<< HEAD
+=======
+            ->where("top","=","0")
+>>>>>>> dbdd536637a2a1341a68d345be11df152600e629
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])
             ->toArray();
@@ -383,6 +387,10 @@ class EvaluationController extends Controller
         $begin = rand(0, 20);
         for ($i = 0; $i < 3; $i += 1) {
             $new_list[] = $list[($begin + $i * 6) % count($list)];
+<<<<<<< HEAD
+=======
+
+>>>>>>> dbdd536637a2a1341a68d345be11df152600e629
         }
 
         return $new_list;
@@ -399,7 +407,7 @@ class EvaluationController extends Controller
             "title" => ["string", "max:50"],
             "content" => ["string", "max:400"],
             "location" => ["string", "max:20"],
-            "shop_name" => ["string", "max:20"],
+//            "shop_name" => ["string", "max:20"],
             "tag" => ["json"],
             "nickname" => ["string", "max:10"]
         ];
