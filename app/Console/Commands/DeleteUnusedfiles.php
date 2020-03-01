@@ -58,7 +58,6 @@ class DeleteUnusedfiles extends Command
             }
         }
 
-
         try{                            //遍历redis
             $redis = new Redis();
             $redis->connect('image_redis_db', 6379);
