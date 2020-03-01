@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use \Redis;
 use App\Http\Controllers\Controller;
 use App\Lib\WeChat;
 use App\Models\Evaluation;
@@ -14,7 +15,8 @@ class EvaluationController extends Controller
     //
 
     /**
-     * @api {post} /api/evaluation 发布评测
+     * @api {post}
+     * 发布评测
      * @apiGroup 评测
      * @apiVersion 1.0.0
      *
@@ -47,9 +49,19 @@ class EvaluationController extends Controller
         if (!is_array($data)) {
             return $data;
         }
-
-        $data = $data + ["collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
+        $data = $data + ["top" => 0,"collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
+
+        $imgs = json_decode($data['img']);
+        try{
+            $redis = new Redis();
+            $redis->connect('image_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+        foreach ($imgs as $i){
+            $redis->hDel('food_image',$i);
+        }
 
         if ($evaluation->save()) {
             // 将该评测加入我的发布
@@ -230,12 +242,38 @@ class EvaluationController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  太长 不展示了
+     *    "code": 0,
+     *    "status": "成功",
+     *    "data": {
+     *          "total": 2,
+     *          "list": [
+     *              {
+     *                  "id": 6,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "天香林90",
+     *                  "time": "2020-02-02 13:48:33"
+     *                  },
+     *              {
+     *                  "id": 1,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "树香林",
+     *                  "time": "2020-02-02 13:28:59"
+     *              }
+     *          ]
+     *       }
      * }
-     */
-    /**
-     * @param Request $request
-     * @return string
      */
     public function get_list(Request $request)
     {
@@ -248,9 +286,53 @@ class EvaluationController extends Controller
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-
-        return msg(0, $evaluation_list);
+        $message = ['total'=>count($evaluation_list),'list'=>$evaluation_list];
+        return msg(0, $message);
     }
+
+
+
+    /**
+     * @api {put} /api/evaluation/top/:id  评测置顶
+     * @apiGroup 评测
+     * @apiVersion 1.0.0
+     *
+     * @apiDescription 使对应id评测置顶，即被展示。并取消其他置顶。管理员登陆可操作
+     *
+     * @apiParam {Number} id      该条评测对应id
+     *
+     * @apiSuccess {Number} code            状态码，0：请求成功
+     * @apiSuccess {String} message         提示信息
+     * @apiSuccess {Object} data            返回参数
+     *
+     * @apiSuccessExample {json} Success-Response:
+     * {"code":0,"status":"成功","data":197}
+     */
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function top(Request $request)
+    {
+        $old = Evaluation::query()->where("top", "=", "1")->first();
+        if($old) {
+            $old->update(["score" => 0]);
+        }
+
+        $evaluation = Evaluation::query()->find($request->route("id"));
+        if (!$evaluation) {
+            return msg(3, "目标不存在" . __LINE__);
+        }
+
+        if ($evaluation->update(["top" => 1])) {
+            return msg(0, __LINE__);
+        }
+
+        return msg(4, __LINE__);
+    }
+
+
+
 
     /**
      * @api {get} /api/evaluation/:id/share_code 获取评测页二维码
@@ -293,6 +375,7 @@ class EvaluationController extends Controller
     private function get_orderBy_score_list()
     {
         $list = Evaluation::query()->limit(20)->orderByDesc("score")
+            ->where("top","=","0")
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])
             ->toArray();
@@ -317,7 +400,7 @@ class EvaluationController extends Controller
             "title" => ["string", "max:50"],
             "content" => ["string", "max:400"],
             "location" => ["string", "max:20"],
-            "shop_name" => ["string", "max:20"],
+//            "shop_name" => ["string", "max:20"],
             "tag" => ["json"],
             "nickname" => ["string", "max:10"]
         ];
@@ -341,3 +424,6 @@ class EvaluationController extends Controller
         return $data;
     }
 }
+
+
+

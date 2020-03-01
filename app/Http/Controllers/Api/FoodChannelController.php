@@ -148,7 +148,33 @@ class FoodChannelController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  0.0
+     *   "code": 0,
+     *   "status": "成功",
+     *   "data": [
+     *         {
+     *             "total": 2,
+     *             "list": [
+     *                 [
+     *                     {
+     *                         "id": 1,
+     *                         "editor": "张桂福",
+     *                         "title": "我爱联建小蛋糕",
+     *                         "url": "www.sky31.com/xxx",
+     *                         "top": 0,
+     *                         "updated_at": "2020-01-29 03:13:04"
+     *                     },
+     *                     {
+     *                         "id": 2,
+     *                         "editor": "张桂福",
+     *                         "title": "我爱联建小蛋糕",
+     *                         "url": "www.sky31.com",
+     *                         "top": 0,
+     *                         "updated_at": "2020-01-29 02:48:50"
+     *                     }
+     *                 ]
+     *             ]
+     *         }
+     *     ]
      * }
      */
     /**
@@ -162,8 +188,9 @@ class FoodChannelController extends Controller
         $foodchannel_list = [];
 
         if($request->route("page") == 1) { //第一页先带上置顶
-            $top = FoodChannel::query()->where("top", "=", "1")->first(["id","editor" , "title", "url", "top", "updated_at"])->toArray();
+            $top = FoodChannel::query()->where("top", "=", "1")->first(["id","editor" , "title", "url", "top", "updated_at"]);
             if($top) { //如果存在置顶 则加入第一条
+                $top = $top->toArray();
                 $foodchannel_list[] = $top;
                 $limit = 9; // 如果已经有一条置顶在列表中，则下面只获取9条数据即可
             }
@@ -173,8 +200,12 @@ class FoodChannelController extends Controller
                                                                     ->orderByDesc("updated_at")
                                                                     ->get(["id","editor" , "title", "url", "top", "updated_at"])
                                                                     ->toArray();
-
-        return msg(0, $foodchannel_list);
+        $list_count = count($foodchannel_list);
+        $message = [
+            'total'=>$list_count,
+            'list'=>$foodchannel_list
+        ];
+        return msg(0, $message);
     }
 
     /**

@@ -17,7 +17,6 @@ function checkUser($sid, $password) { //登录验证
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $output = curl_exec($ch);
     curl_close($ch);
-
     return json_decode($output, true);
 }
 

@@ -146,20 +146,23 @@ class ActivityController extends Controller
      * {
      *  "code":0,
      *  "status":"成功",
-     *  "data":[
-     *      {
-     *          "id":1,
-     *          "activity_info":"蜜雪冰城买二送一",
-     *          "top":1,
-     *          "updated_at":"2019-11-30 11:03:31"
-     *      },
-     *      {
-     *          "id":2,
-     *          "activity_info":"蜜雪冰城买一送一",
-     *          "top":0,
-     *          "updated_at":"2019-11-30 11:03:08"
-     *      }
-     *  ]
+     *  "data":{
+     *      "total": 2,
+     *      "list": [
+     *       {
+     *           "id":1,
+     *           "activity_info":"蜜雪冰城买二送一",
+     *           "top":1,
+     *           "updated_at":"2019-11-30 11:03:31"
+     *       },
+     *       {
+     *           "id":2,
+     *           "activity_info":"蜜雪冰城买一送一",
+     *           "top":0,
+     *           "updated_at":"2019-11-30 11:03:08"
+     *       }
+     *      ]
+     *  }
      * }
      */
     /**
@@ -173,8 +176,9 @@ class ActivityController extends Controller
         $activity_list = Activity::query()->limit(7)->offset($offset)->orderByDesc("updated_at")
             ->get(["id", "activity_info", "top", "updated_at"])
             ->toArray();
-
-        return msg(0, $activity_list);
+        $list_count = Activity::query()->count();
+        $message = ['total'=>$list_count,'list'=>$activity_list];
+        return msg(0, $message);
     }
 
     /**
@@ -200,14 +204,13 @@ class ActivityController extends Controller
     public function top(Request $request)
     {
         $old = Activity::query()->where("top", "=", "1")->first();
+        if($old) {
+            $old->update(["top" => 0]);
+        }
 
         $activity = Activity::query()->find($request->route("id"));
         if (!$activity) {
             return msg(3, "目标不存在" . __LINE__);
-        }
-
-        if($old) {
-            $old->update(["top" => 0]);
         }
 
         if ($activity->update(["top" => 1])) {
