@@ -64,7 +64,10 @@ class DeleteUnusedfiles extends Command
         } catch (Exception $e) {
             return msg(500, "连接redis失败" . __LINE__);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b9661b6ab67f144eb4ffd562f4948cd7d2be5132
         $files = $redis->hkeys("food_image");
         foreach ($files as $file){           //遍历结果去掉前缀
             $redis_replace = str_replace("https://test.upick.com/storage/image/","",$file);
