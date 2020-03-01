@@ -59,16 +59,11 @@ class ImageController extends Controller
         }
         $file = $request->file('image');
         $ext = $file->getClientOriginalExtension(); // 获取后缀
-<<<<<<< HEAD
-        $allow_ext = ['jpg','jpeg','png','gif'];
-        if(!in_array($ext,$allow_ext)){
-            return msg(3,__LINE__);
-=======
+
         $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (!in_array($ext, $allow_ext)) {
             return msg(3, "非法文件" . __LINE__);
->>>>>>> dbdd536637a2a1341a68d345be11df152600e629
         }
         $name = md5(session('uid') . time() . rand(1, 500));
         $all_name = $name . "." . $ext;
