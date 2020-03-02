@@ -14,7 +14,7 @@ class AddToEvaluationsTable extends Migration
     public function up()
     {
         Schema::table('evaluations', function (Blueprint $table) {
-             $table->boolean('top')->after("collections");
+             $table->boolean('top')->default('0')->after("collections");
         });
     }
 

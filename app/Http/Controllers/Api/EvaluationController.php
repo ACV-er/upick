@@ -49,18 +49,18 @@ class EvaluationController extends Controller
         if (!is_array($data)) {
             return $data;
         }
-        $data = $data + ["top" => 0,"collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
+        $data = $data + ["top" => 0, "collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
 
         $imgs = json_decode($data['img']);
-        try{
+        try {
             $redis = new Redis();
             $redis->connect('image_redis_db', 6379);
         } catch (Exception $e) {
             return msg(500, "连接redis失败" . __LINE__);
         }
-        foreach ($imgs as $i){
-            $redis->hDel('food_image',$i);
+        foreach ($imgs as $i) {
+            $redis->hDel('food_image', $i);
         }
 
         if ($evaluation->save()) {
@@ -172,8 +172,10 @@ class EvaluationController extends Controller
     public function get(Request $request)
     {
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if (!session()->has("mark" . $request->route('id'))
-            || session("mark" . $request->route('id')) + 1800 < time()) {
+        if (
+            !session()->has("mark" . $request->route('id'))
+            || session("mark" . $request->route('id')) + 1800 < time()
+        ) {
             $evaluation->increment("views");
             session(["mark" => time()]);
         }
@@ -281,8 +283,10 @@ class EvaluationController extends Controller
         $offset = $request->route("page") * 10 - 10;
 
         $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("created_at")
-            ->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->get([
+                "id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"
+            ])
             ->toArray();
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
@@ -317,7 +321,7 @@ class EvaluationController extends Controller
     public function top(Request $request)
     {
         $old = Evaluation::query()->where("top", "=", "1")->first();
-        if($old) {
+        if ($old) {
             $old->update(["score" => 0]);
         }
 
@@ -359,8 +363,9 @@ class EvaluationController extends Controller
      *  }
      * }
      */
-    public function get_share_code(Request $request) {
-        if(file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
+    public function get_share_code(Request $request)
+    {
+        if (file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
             return msg(0, ["code_url" => config("app.url") . "/storage/image/" . $request->route("id") . ".png"]);
         } else {
             try {
@@ -369,7 +374,7 @@ class EvaluationController extends Controller
             } catch (\Exception $e) {
                 $message = [];
                 preg_match("/(^[.]{20})/", $e->getMessage(), $message);
-                return msg(4, (isset($message[1])?$message[1]:"未知") . __LINE__);
+                return msg(4, (isset($message[1]) ? $message[1] : "未知") . __LINE__);
             }
         }
     }
@@ -377,9 +382,11 @@ class EvaluationController extends Controller
     private function get_orderBy_score_list()
     {
         $list = Evaluation::query()->limit(20)->orderByDesc("score")
-            ->where("top","=","0")
-            ->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->where("top", "=", "0")
+            ->get([
+                "id", "nickname as publisher_name", "tag", "views",
+                "collections", "top", "img", "title", "location", "shop_name", "created_at as time"
+            ])
             ->toArray();
 
         $new_list = [];
@@ -402,7 +409,7 @@ class EvaluationController extends Controller
             "title" => ["string", "max:50"],
             "content" => ["string", "max:400"],
             "location" => ["string", "max:20"],
-//            "shop_name" => ["string", "max:20"],
+            //            "shop_name" => ["string", "max:20"],
             "tag" => ["json"],
             "nickname" => ["string", "max:10"]
         ];
@@ -428,6 +435,3 @@ class EvaluationController extends Controller
         return $data;
     }
 }
-
-
-
