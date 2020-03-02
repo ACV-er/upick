@@ -73,6 +73,7 @@ class EvaluationController extends Controller
         return msg(4, __LINE__);
     }
 
+
     /**
      * @api {put} /api/evaluation/:id 更新评测
      * @apiGroup 评测
@@ -420,7 +421,9 @@ class EvaluationController extends Controller
         if (Validator::make($data, $mod)->fails()) {
             return msg(3, '数据格式错误' . __LINE__);
         };
-
+        if (empty($data["shop_name"]) || $data["shop_name"] === ""){
+                $data["shop_name"] = NULL;
+        }
         return $data;
     }
 }
