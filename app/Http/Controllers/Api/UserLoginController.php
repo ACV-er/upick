@@ -185,7 +185,7 @@ class UserLoginController extends Controller
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])->toArray();
         $list_count =  DB::table("evaluations")->whereIn("evaluations.id", $publish_id_list)
-            ->query()->count();
+            ->count();
         $message = ['total'=>$list_count,'list'=>$publish_list];
         return msg(0, $message);
     }

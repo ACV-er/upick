@@ -200,7 +200,7 @@ class FoodChannelController extends Controller
                                                                     ->orderByDesc("updated_at")
                                                                     ->get(["id","editor" , "title", "url", "top", "updated_at"])
                                                                     ->toArray();
-        $list_count = count($foodchannel_list);
+        $list_count = FoodChannel::query()->count();
         $message = [
             'total'=>$list_count,
             'list'=>$foodchannel_list
