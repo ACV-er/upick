@@ -136,7 +136,8 @@ class CollectionController extends Controller
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])
             ->toArray();
-        $list_count = count($collection_list);
+        $list_count = DB::table("evaluations")->whereIn("evaluations.id", $collection_id_list)->
+            query()->count();
         $message = ['total'=>$list_count,'list'=>$collection_list];
         return msg(0, $message);
     }

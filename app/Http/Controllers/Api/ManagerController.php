@@ -250,7 +250,7 @@ class ManagerController extends Controller
         foreach ($manager_list as &$manager) {
             $manager["level"] = $level[$manager["level"]];
         }
-        $list_count = count($manager_list);
+        $list_count = Manager::query()->count();
         $message = ['total'=>$list_count,'list'=>$manager_list];
         return msg(0, $message);
     }

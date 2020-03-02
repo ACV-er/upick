@@ -196,7 +196,8 @@ class FoodLibraryController extends Controller
                 "foods.id as id", "managers.nickname as publisher_name", "food_name", "location",
                 "img", "foods.updated_at as time"
             ])->toArray();
-        $message = ['total'=>count($food_list),'list'=>$food_list];
+        $list_count = Food::quety()->count();
+        $message = ['total'=>$list_count,'list'=>$food_list];
         return msg(0, $message);
     }
 
