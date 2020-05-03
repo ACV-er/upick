@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class EvaluationController extends Controller
 {
     //
+
     /**
      * @api {post}
      * 发布评测
@@ -44,7 +45,6 @@ class EvaluationController extends Controller
      */
     public function publish(Request $request)
     {
-		date_default_timezone_set('PRC');
         $data = $this->data_handle($request);
         if (!is_array($data)) {
             return $data;
@@ -282,6 +282,7 @@ class EvaluationController extends Controller
     public function get_list(Request $request)
     {
         $offset = $request->route("page") * 10 - 10;
+
         $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("created_at")
             ->get([
                 "id", "nickname as publisher_name", "tag", "views",
@@ -291,6 +292,7 @@ class EvaluationController extends Controller
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
+		echo(date('T e Y-m-d H:i:s',time()));
         $message = ['total' => count($evaluation_list), 'list' => $evaluation_list];
         return msg(0, $message);
     }
