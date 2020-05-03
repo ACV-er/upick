@@ -292,8 +292,8 @@ class EvaluationController extends Controller
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-        $list_count = Evaluation::query()->count();
-        $message = ['total'=>$list_count,'list'=>$evaluation_list];
+		echo(date('T e Y-m-d H:i:s',time()));
+        $message = ['total' => count($evaluation_list), 'list' => $evaluation_list];
         return msg(0, $message);
     }
 

@@ -28,7 +28,9 @@ class CreateEvaluationsTable extends Migration
             $table->string("shop_name")->nullable()->comment("店名");
             $table->string("nickname")->comment("昵称");
             $table->double("score")->index()->default(0)->comment("排序分值");
-            $table->timestamps();
+    //        $table->timestamps();
+			$table->dateTime('created_at')->date('Y-m-d H:i:s',time());
+			$table->dateTime('updated_at')->date('Y-m-d H:i:s',time());
         });
     }
 
