@@ -180,6 +180,7 @@ class EvaluationController extends Controller
             session(["mark" => time()]);
         }
 
+//        echo(date('T e Y-m-d H:i:s',time()));
         return msg(0, $evaluation->info());
     }
 
@@ -409,7 +410,6 @@ class EvaluationController extends Controller
             "title" => ["string", "max:50"],
             "content" => ["string", "max:400"],
             "location" => ["string", "max:20"],
-            //            "shop_name" => ["string", "max:20"],
             "tag" => ["json"],
             "nickname" => ["string", "max:10"]
         ];
