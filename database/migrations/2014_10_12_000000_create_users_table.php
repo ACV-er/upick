@@ -21,7 +21,8 @@ class CreateUsersTable extends Migration
             $table->json('collection');
             $table->json('publish');
             $table->string("remember")->unique();
-            $table->timestamps();
+            $table->dataTime("created_at")->date('Y-m-d H:i:s',time());
+            $table->dataTime("updated_at")->date('Y-m-d H:i:s',time());
         });
     }
 

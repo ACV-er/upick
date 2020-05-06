@@ -1,4 +1,11 @@
 FROM php:7.3-fpm
+
+# 设置时区
+ARG TZ=Asia/Shanghai
+ENV TZ ${TZ}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 安装软件 cron
 COPY redis /usr/src/php/ext/redis
 COPY sources.list /etc/apt/sources.list
 RUN rm -Rf /var/lib/apt/lists/* \

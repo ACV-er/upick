@@ -201,7 +201,7 @@ class FoodChannelController extends Controller
                                                                     ->get(["id","editor" , "title", "url", "top", "updated_at"])
                                                                     ->toArray();
         $list_count = FoodChannel::query()->count();
-        $message[] = [
+        $message = [
             'total'=>$list_count,
             'list'=>$foodchannel_list
         ];
