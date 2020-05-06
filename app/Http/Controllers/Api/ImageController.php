@@ -59,6 +59,7 @@ class ImageController extends Controller
         }
         $file = $request->file('image');
         $ext = $file->getClientOriginalExtension(); // 获取后缀
+
         $allow_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (!in_array($ext, $allow_ext)) {

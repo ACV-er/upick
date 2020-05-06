@@ -69,6 +69,8 @@ class CollectionController extends Controller
         return msg(0, __LINE__);
     }
 
+
+
     /**
      * @api {get} /api/user/:uid/keep     获取用户收藏列表
      * @apiGroup 用户
@@ -87,6 +89,8 @@ class CollectionController extends Controller
      *  "code":0,
      *  "status":"成功",
      *  "data":[
+     *      "total":2,
+     *      "list":
      *      {
      *          "id":2,
      *          "publisher_name":"丁浩东",
@@ -132,7 +136,9 @@ class CollectionController extends Controller
             ->get(["id", "nickname as publisher_name", "tag", "views",
                 "collections", "img", "title", "location", "shop_name", "created_at as time"])
             ->toArray();
-
-        return msg(0, $collection_list);
+        $list_count = DB::table("evaluations")->whereIn("evaluations.id", $collection_id_list)->
+            count();
+        $message = ['total'=>$list_count,'list'=>$collection_list];
+        return msg(0, $message);
     }
 }

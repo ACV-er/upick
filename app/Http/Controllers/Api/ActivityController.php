@@ -146,7 +146,7 @@ class ActivityController extends Controller
      * {
      *  "code":0,
      *  "status":"成功",
-     *  "data":[
+     *  "data":{
      *      "total": 2,
      *      "list": [
      *       {
@@ -162,8 +162,7 @@ class ActivityController extends Controller
      *           "updated_at":"2019-11-30 11:03:08"
      *       }
      *      ]
-     *
-     *  ]
+     *  }
      * }
      */
     /**
@@ -178,7 +177,7 @@ class ActivityController extends Controller
             ->get(["id", "activity_info", "top", "updated_at"])
             ->toArray();
         $list_count = Activity::query()->count();
-        $message[] = ['total'=>$list_count,'list'=>$activity_list];
+        $message = ['total'=>$list_count,'list'=>$activity_list];
         return msg(0, $message);
     }
 

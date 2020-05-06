@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use \Redis;
 use App\Http\Controllers\Controller;
 use App\Lib\WeChat;
 use App\Models\Evaluation;
@@ -48,9 +49,19 @@ class EvaluationController extends Controller
         if (!is_array($data)) {
             return $data;
         }
-
-        $data = $data + ["top" => 0,"collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
+        $data = $data + ["top" => 0, "collections" => 0, "like" => 0, "unlike" => 0, "views" => 0, "publisher" => session("uid")];
         $evaluation = new Evaluation($data);
+
+        $imgs = json_decode($data['img']);
+        try {
+            $redis = new Redis();
+            $redis->connect('image_redis_db', 6379);
+        } catch (Exception $e) {
+            return msg(500, "连接redis失败" . __LINE__);
+        }
+        foreach ($imgs as $i) {
+            $redis->hDel('food_image', $i);
+        }
 
         if ($evaluation->save()) {
             // 将该评测加入我的发布
@@ -61,6 +72,7 @@ class EvaluationController extends Controller
 
         return msg(4, __LINE__);
     }
+
 
     /**
      * @api {put} /api/evaluation/:id 更新评测
@@ -160,12 +172,15 @@ class EvaluationController extends Controller
     public function get(Request $request)
     {
         $evaluation = Evaluation::query()->find($request->route('id'));
-        if (!session()->has("mark" . $request->route('id'))
-            || session("mark" . $request->route('id')) + 1800 < time()) {
+        if (
+            !session()->has("mark" . $request->route('id'))
+            || session("mark" . $request->route('id')) + 1800 < time()
+        ) {
             $evaluation->increment("views");
             session(["mark" => time()]);
         }
 
+//        echo(date('T e Y-m-d H:i:s',time()));
         return msg(0, $evaluation->info());
     }
 
@@ -231,7 +246,37 @@ class EvaluationController extends Controller
      *
      * @apiSuccessExample {json} Success-Response:
      * {
-     *  太长 不展示了
+     *    "code": 0,
+     *    "status": "成功",
+     *    "data": {
+     *          "total": 2,
+     *          "list": [
+     *              {
+     *                  "id": 6,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "天香林90",
+     *                  "time": "2020-02-02 13:48:33"
+     *                  },
+     *              {
+     *                  "id": 1,
+     *                  "publisher_name": "我爱小蛋糕",
+     *                  "tag": "[\"不辣\", \"汤好喝\"]",
+     *                  "views": 0,
+     *                  "collections": 0,
+     *                  "img": "不知道是啥",
+     *                  "title": "我爱联建小蛋糕",
+     *                  "location": "联建",
+     *                  "shop_name": "树香林",
+     *                  "time": "2020-02-02 13:28:59"
+     *              }
+     *          ]
+     *       }
      * }
      */
     public function get_list(Request $request)
@@ -239,20 +284,20 @@ class EvaluationController extends Controller
         $offset = $request->route("page") * 10 - 10;
 
         $evaluation_list = Evaluation::query()->limit(10)->offset($offset)->orderByDesc("created_at")
-            ->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->get([
+                "id", "nickname as publisher_name", "tag", "views",
+                "collections", "img", "title", "location", "shop_name", "created_at as time"
+            ])
             ->toArray();
         if ($request->route("page") == 1) {
             $evaluation_list = array_merge($this->get_orderBy_score_list(), $evaluation_list);
         }
-
-        return msg(0, $evaluation_list);
+		echo(date('T e Y-m-d H:i:s',time()));
+        $message = ['total' => count($evaluation_list), 'list' => $evaluation_list];
+        return msg(0, $message);
     }
 
-    /**
-     * @param Request $request
-     * @return string
-     */
+
 
     /**
      * @api {put} /api/evaluation/top/:id  评测置顶
@@ -277,7 +322,7 @@ class EvaluationController extends Controller
     public function top(Request $request)
     {
         $old = Evaluation::query()->where("top", "=", "1")->first();
-        if($old) {
+        if ($old) {
             $old->update(["score" => 0]);
         }
 
@@ -319,8 +364,9 @@ class EvaluationController extends Controller
      *  }
      * }
      */
-    public function get_share_code(Request $request) {
-        if(file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
+    public function get_share_code(Request $request)
+    {
+        if (file_exists(storage_path('app/public/image/') . $request->route("id") . ".png")) {
             return msg(0, ["code_url" => config("app.url") . "/storage/image/" . $request->route("id") . ".png"]);
         } else {
             try {
@@ -329,7 +375,7 @@ class EvaluationController extends Controller
             } catch (\Exception $e) {
                 $message = [];
                 preg_match("/(^[.]{20})/", $e->getMessage(), $message);
-                return msg(4, (isset($message[1])?$message[1]:"未知") . __LINE__);
+                return msg(4, (isset($message[1]) ? $message[1] : "未知") . __LINE__);
             }
         }
     }
@@ -337,16 +383,17 @@ class EvaluationController extends Controller
     private function get_orderBy_score_list()
     {
         $list = Evaluation::query()->limit(20)->orderByDesc("score")
-            ->where("top","=","0")
-            ->get(["id", "nickname as publisher_name", "tag", "views",
-                "collections", "img", "title", "location", "shop_name", "created_at as time"])
+            ->where("top", "=", "0")
+            ->get([
+                "id", "nickname as publisher_name", "tag", "views",
+                "collections", "top", "img", "title", "location", "shop_name", "created_at as time"
+            ])
             ->toArray();
 
         $new_list = [];
         $begin = rand(0, 20);
         for ($i = 0; $i < 3; $i += 1) {
             $new_list[] = $list[($begin + $i * 6) % count($list)];
-
         }
 
         return $new_list;
@@ -363,7 +410,6 @@ class EvaluationController extends Controller
             "title" => ["string", "max:50"],
             "content" => ["string", "max:400"],
             "location" => ["string", "max:20"],
-//            "shop_name" => ["string", "max:20"],
             "tag" => ["json"],
             "nickname" => ["string", "max:10"]
         ];
@@ -383,10 +429,9 @@ class EvaluationController extends Controller
         if (Validator::make($data, $mod)->fails()) {
             return msg(3, '数据格式错误' . __LINE__);
         };
-
+        if (empty($data["shop_name"]) || $data["shop_name"] === ""){
+                $data["shop_name"] = NULL;
+        }
         return $data;
     }
 }
-
-
-

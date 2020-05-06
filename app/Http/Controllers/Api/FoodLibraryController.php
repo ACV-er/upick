@@ -150,7 +150,7 @@ class FoodLibraryController extends Controller
      *{
      *  "code": 0,
      *  "status": "成功",
-     *  "data": [
+     *  "data":
      *               {
      *                  "total": 3,
      *                  "list": [
@@ -178,8 +178,8 @@ class FoodLibraryController extends Controller
      *                      "img": "{\"img\": \"http://zgf.jsky31.cn/test.JPG\"}",
      *                      "time": "2020-01-22 05:21:43"
      *                }
-     *
-     *          ]
+     *              ]
+     *             }
      *}
      */
     /**
@@ -196,8 +196,8 @@ class FoodLibraryController extends Controller
                 "foods.id as id", "managers.nickname as publisher_name", "food_name", "location",
                 "img", "foods.updated_at as time"
             ])->toArray();
-        $list_count = Food::query()->count();
-        $message[] = ['total'=>$list_count,'list'=>$food_list];
+        $list_count = Food::quety()->count();
+        $message = ['total'=>$list_count,'list'=>$food_list];
         return msg(0, $message);
     }
 
