@@ -9,7 +9,7 @@ class Evaluation extends Model
 {
     //
     protected $fillable = [
-        "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name", "nickname","top"
+        "publisher", "tag", "views", "collections", "like", "unlike", "img", "title", "content", "location", "shop_name", "nickname", "top"
     ];
 
     public function like($action)
@@ -27,7 +27,7 @@ class Evaluation extends Model
         $is_like = -1;
         $is_collection = 0;
         if (session("login")) {
-            $is_like = Like::query()->where(["user"=> session("uid"), "evaluation" => $this->id])->first();
+            $is_like = Like::query()->where(["user" => session("uid"), "evaluation" => $this->id])->first();
             $is_like = $is_like ? $is_like->like : -1;
             $is_collection = key_exists($this->id, json_decode(User::query()->find(session("uid"))->collection, true));
         }
@@ -39,6 +39,7 @@ class Evaluation extends Model
             "tag" => $this->tag,
             "views" => $this->views,
             "collections" => $this->collections,
+            "top" => $this->top,
             "like" => $this->like,
             "unlike" => $this->unlike,
             "img" => $this->img,

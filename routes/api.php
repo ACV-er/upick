@@ -42,7 +42,6 @@ Route::namespace('Api')->group(function () {
         Route::get('/food', "FoodLibraryController@get");
         Route::get('/food/new', "FoodLibraryController@fresh");
     });
-//    Route::get('/image/delete', "ImageController@delete");
     // 管理员和用户都可以使用
     Route::group(['middleware' => 'login.check'], function () {
         Route::post('/image', "ImageController@upload");

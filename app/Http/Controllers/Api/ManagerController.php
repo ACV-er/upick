@@ -219,20 +219,23 @@ class ManagerController extends Controller
      * {
      *  "code":0,
      *  "status":"成功",
-     *  "data":[
-     *      {
-     *          "id":"5",
-     *          "nickname":"从未登录",
-     *          "stu_id":"201705550820",
-     *          "level":"普通管理员"
-     *      },
-     *      {
-     *          "id":"6",
-     *          "nickname":"从未登录",
-     *          "stu_id":"201705550716",
-     *          "level":"普通管理员"
-     *      }
-     *  ]
+     *  "data":{
+     *      "total":2,
+     *      "list":[
+     *            {
+     *              "id":"5",
+     *              "nickname":"从未登录",
+     *              "stu_id":"201705550820",
+     *              "level":"普通管理员"
+     *            },
+     *            {
+     *              "id":"6",
+     *              "nickname":"从未登录",
+     *              "stu_id":"201705550716",
+     *              "level":"普通管理员"
+     *            }
+     *          ]
+     *        }
      * }
      *
      */
@@ -247,8 +250,9 @@ class ManagerController extends Controller
         foreach ($manager_list as &$manager) {
             $manager["level"] = $level[$manager["level"]];
         }
-
-        return msg(0, $manager_list);
+        $list_count = Manager::query()->count();
+        $message = ['total'=>$list_count,'list'=>$manager_list];
+        return msg(0, $message);
     }
 
 }
